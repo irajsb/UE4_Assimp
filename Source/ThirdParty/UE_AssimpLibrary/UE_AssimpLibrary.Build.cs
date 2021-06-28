@@ -5,6 +5,20 @@ using UnrealBuildTool;
 
 public class UE_AssimpLibrary : ModuleRules
 {
+
+	public string BinFolder(ReadOnlyTargetRules Target)
+	{
+		if(Target.Platform == UnrealTargetPlatform.Mac)
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Mac/"));
+		else if(Target.Platform == UnrealTargetPlatform.IOS)
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/IOS/"));
+		if(Target.Platform == UnrealTargetPlatform.Win64)
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Win64/"));
+		if(Target.Platform == UnrealTargetPlatform.Android)
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Android/"));
+		return "";
+	}
+	
 	public UE_AssimpLibrary(ReadOnlyTargetRules Target) : base(Target)
 	{
 		Type = ModuleType.External;
@@ -12,22 +26,44 @@ public class UE_AssimpLibrary : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "lib", "Release", "assimp-vc142-mt.lib"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory,"assimp" ,"lib", "Release", "assimp-vc142-mt.lib"));
 
 
-			RuntimeDependencies.Add(Path.Combine(ModuleDirectory, "bin","Release","assimp-vc142-mt.dll"));
+			//RuntimeDependencies.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp-vc142-mt.dll"));
 
-			PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "include"));
+			PublicIncludePaths.Add(Path.Combine(ModuleDirectory,"assimp" , "include"));
 			// Delay-load the DLL, so we can load it from the right place first
-		//	PublicDelayLoadDLLs.Add("ExampleLibrary.dll");
+			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp-vc142-mt.dll"));
 
-			// Ensure that the DLL is staged along with the executable
+
+			string  AssimpDll = Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "assimp-vc142-mt.dll");
+			string BinPath =Path.Combine(ModuleDirectory,BinFolder(Target),"assimp-vc142-mt.dll");
+			
+		 CopyFile(AssimpDll,BinPath);
+			  // Ensure that the DLL is staged along with the executable
 		//	RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/UE_AssimpLibrary/Win64/ExampleLibrary.dll");
         }
         else if (Target.Platform == UnrealTargetPlatform.Mac)
         {
-            PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory, "Mac", "Release", "libExampleLibrary.dylib"));
-            RuntimeDependencies.Add("$(PluginDir)/Source/ThirdParty/UE_AssimpLibrary/Mac/Release/libExampleLibrary.dylib");
+          
         }
 	}
+	public void CopyFile(string Source, string Dest)
+	{
+		System.Console.WriteLine("Copying {0} to {1}", Source, Dest);
+		if (System.IO.File.Exists(Dest))
+		{
+			System.IO.File.SetAttributes(Dest, System.IO.File.GetAttributes(Dest) & ~System.IO.FileAttributes.ReadOnly);
+		}
+		try
+		{
+			System.IO.File.Copy(Source, Dest, true);
+		}
+		catch (System.Exception ex)
+		{
+			System.Console.WriteLine("Failed to copy file: {0}", ex.Message);
+		}
+	}
+
+	
 }

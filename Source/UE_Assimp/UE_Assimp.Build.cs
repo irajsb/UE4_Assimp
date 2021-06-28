@@ -27,7 +27,7 @@ public class UE_Assimp : ModuleRules
 			{
 				"Core",
 				"UE_AssimpLibrary",
-				"Projects"
+				
 				// ... add other public dependencies that you statically link with here ...
 			}
 			);
@@ -36,6 +36,10 @@ public class UE_Assimp : ModuleRules
 		PrivateDependencyModuleNames.AddRange(
 			new string[]
 			{
+				"CoreUObject",
+				"Engine",
+				"Slate",
+				"SlateCore","ProceduralMeshComponent",
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
