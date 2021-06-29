@@ -11,7 +11,7 @@
 /**
  * 
  */
-
+class UAIMesh;
 //wrapper for scene
 UCLASS(BlueprintType,DefaultToInstanced)
 class UE_ASSIMP_API UAIScene : public UObject
@@ -22,7 +22,9 @@ class UE_ASSIMP_API UAIScene : public UObject
 	public:
 	void SetScene(const aiScene* in);
 	UFUNCTION(BlueprintCallable)
-	TArray<UMeshComponent*>SpawnMeshes(FTransform Transform,TSubclassOf<AActor>ClassToSpawn);
+	TArray<UMeshComponent*>SpawnAllMeshes(FTransform Transform,TSubclassOf<AActor>ClassToSpawn);
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	void  GetAllMeshes(TArray<UAIMesh*>& Meshes);
 	private:
 	const aiScene* scene;
 	virtual void BeginDestroy() override;
