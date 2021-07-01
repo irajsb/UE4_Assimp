@@ -35,5 +35,8 @@ static void OpenFileDialogue(FString DialogTitle,FString DefaultPath,FString Def
 static bool FileDialogShared(bool bSave, const void* ParentWindowHandle, const FString& DialogTitle, const FString& DefaultPath, const FString& DefaultFile, const FString& FileTypes, uint32 Flags, TArray<FString>& OutFilenames, int32& OutFilterIndex,bool MultiSelect);
 //
 UFUNCTION(BlueprintCallable)
- static void ImportScenes(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete);
+ static void ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete);
+ UFUNCTION(BlueprintCallable)
+ static void ImportScenes(TArray<FString> InFilenames,UObject* ParentObject,TArray<UAIScene*>& Scenes);
+ static FTransform aiMatToTransform(aiMatrix4x4 NodeTransform);
 };

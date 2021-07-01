@@ -3,15 +3,23 @@
 
 #include "AIScene.h"
 
+#include "AICamera.h"
 #include "AIMesh.h"
+#include "AINode.h"
 #include "assimp/mesh.h"
 #include "AssimpMesh.h"
 #include "ProceduralMeshComponent.h"
-#include "ThirdParty/UE_AssimpLibrary/assimp/code/AssetLib/3MF/3MFXmlTags.h"
+#include "assimp/cimport.h"
 
-void UAIScene::SetScene(const aiScene* in)
+
+UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene)
 {
-	scene=in;
+
+	//todo check if object is already created and skip creation and return object 
+	UAIScene* Object=	NewObject<UAIScene>(Parent,UAIScene::StaticClass(),NAME_None,RF_Transient);
+	Object->scene= const_cast<aiScene*>(Scene);
+	
+	return Object;
 }
 
 TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform,TSubclassOf<AActor>ClassToSpawn)
@@ -70,7 +78,33 @@ void UAIScene::GetAllMeshes(TArray<UAIMesh*>& Meshes)
 void UAIScene::BeginDestroy()
 {
 
+	aiReleaseImport( scene);
 	scene=nullptr;
 	
 	Super::BeginDestroy();
 }
+
+
+UAINode* UAIScene::GetRootNode()
+{
+	return	UAINode::InternalCreateNewObject(this,scene->mRootNode); 
+}
+
+UAIMesh* UAIScene::GetMeshAtIndex(int Index)
+{
+return  UAIMesh::InternalConstructNewAIMesh(scene->mMeshes[Index],this);	
+}
+
+void UAIScene::GetAllCameras(bool &HasCameras,TArray<UAICamera*>& Cameras)
+{
+	Cameras.Reset();
+
+	HasCameras=scene->HasCameras();
+	for (unsigned i = 0; i < scene->mNumMeshes; i++)
+	{
+	Cameras.Add(	UAICamera::InternalCreateNewObject(this,scene->mCameras[i]));	
+	}
+	
+}
+
+

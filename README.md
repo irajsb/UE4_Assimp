@@ -1,4 +1,14 @@
-installation:
-1- open ThirdParty\UE_AssimpLibrary\assimp
-2- run in terminal : cmake CMakeLists.txt
-3- open vs generated project and build for relase target (for debug target you may need to change build.cs )
+# Assimp  for  Unreal engine 
+Features:
+- Async Loading
+- Users can use multpile approaches for maximum flexiblity 
+- Garbage collection using unreal GC and integration with UObjects  
+
+
+|             |  |
+:-------------------------:|:-------------------------:
+![](.github/Image1m.png)  |  ![](.github/Image2m.png)
+---
+## Docs  :  
+For instructions about how to use visit : [Docs](https://github.com/irajsb/UE4_Assimp/wiki)
+

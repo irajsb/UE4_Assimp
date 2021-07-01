@@ -2,14 +2,12 @@
 
 
 #include "AssimpFunctionLibrary.h"
-
-
 #include "AIScene.h"
-#include "assimp/ai_assert.h"
-#include "assimp/ai_assert.h"
+#include "assimp/cimport.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
 #include "assimp/scene.h"
+
 
 
 #if PLATFORM_WINDOWS
@@ -193,7 +191,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	return bSuccess;
 }
 
- void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
+ void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
  {
 
 //I'm a noob in realms of async if you find a better way to keep data do a pull request
@@ -222,16 +220,16 @@ if(NumOfThreads==0)
  				AsyncTask(ENamedThreads::AnyHiPriThreadHiPriTask,[ParentObject,FileName,OnProgressUpdated,OnImportSceneComplete]()
 				{ 
 
- 		
- 				Assimp::Importer importer;
- 				const aiScene* scene = importer.ReadFile(TCHAR_TO_UTF8( *FileName),
-				aiProcess_CalcTangentSpace       |
-				aiProcess_Triangulate            |
-				aiProcess_JoinIdenticalVertices  |
-				aiProcess_SortByPType);
+
+ 			
  				
+ 						const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),
+						aiProcess_CalcTangentSpace       |
+							aiProcess_Triangulate            |
+							aiProcess_JoinIdenticalVertices  |
+								aiProcess_SortByPType);
  				if( !scene) {
-				UE_LOG(LogTemp,Error,TEXT("%s"),ANSI_TO_TCHAR(( importer.GetErrorString())))
+				UE_LOG(LogTemp,Error,TEXT("Error importing scene in assimpfunction library async"))
  	
  					}else
  					{
@@ -240,8 +238,8 @@ if(NumOfThreads==0)
 						AsyncTask(ENamedThreads::GameThread,[ParentObject,scene,OnProgressUpdated,OnImportSceneComplete]()
 						{
 							
-							auto Object=	NewObject<UAIScene>(ParentObject);
-								Object->SetScene(scene);
+							UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene);
+								
 							NumOfThreads=NumOfThreads-1;
 							AIScenes.Add(Object);
 							OnProgressUpdated.Execute(1-static_cast<float>(NumOfThreads)/TotalThreads,Object);
@@ -271,4 +269,49 @@ if(NumOfThreads==0)
  	
 
  	
+ }
+
+ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
+	 TArray<UAIScene*>& Scenes)
+ {
+ 	
+
+ 	for( FString FileName:InFilenames)
+ 	{
+ 		const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),
+	aiProcess_CalcTangentSpace       |
+	aiProcess_Triangulate            |
+	aiProcess_JoinIdenticalVertices  |
+	aiProcess_SortByPType);
+ 		
+ 		
+ 				
+ 		if( !scene) {
+ 			UE_LOG(LogTemp,Error,TEXT("Error importing scene in assimpfunction library "))
+ 	
+ 				}
+ 			else
+ 			{
+ 				UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene);
+ 				
+ 			
+ 				Scenes.Add(Object);
+ 			
+		}
+ 	}
+ }
+
+ FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
+ {
+
+ 	//TODO Maybe We need to swap x and y  
+ 	//convert aiMatrix to UE  Matrix then to transform
+ 	FMatrix Matrix;
+    
+     FVector Ax1=FVector(NodeTransform.a1,NodeTransform.b1,NodeTransform.c1);
+     FVector Ax2=FVector(NodeTransform.a2,NodeTransform.b2,NodeTransform.c2);
+     FVector Ax3=FVector(NodeTransform.a3,NodeTransform.b3,NodeTransform.c3);
+     FVector Ax4=FVector(NodeTransform.a4,NodeTransform.b4,NodeTransform.c4);
+    Matrix.SetAxes(&Ax1,&Ax2,&Ax3,&Ax4);
+ 	return FTransform(Matrix);
  }
