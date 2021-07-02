@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIScene.h"
 #include "assimp/material.h"
 #include "UObject/NoExportTypes.h"
 #include "AIMaterial.generated.h"
@@ -16,6 +17,7 @@ class UE_ASSIMP_API UAIMaterial : public UObject
 {
 	GENERATED_BODY()
 
+	friend  UAIScene;
 	public:
 	static UAIMaterial* InternalCreateNewObject(UObject* Parent,aiMaterial* InMaterial);
 

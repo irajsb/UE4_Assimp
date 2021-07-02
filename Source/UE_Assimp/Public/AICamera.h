@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIScene.h"
 #include "assimp/camera.h"
 #include "UObject/NoExportTypes.h"
 #include "AICamera.generated.h"
@@ -17,7 +18,8 @@ class UE_ASSIMP_API UAICamera : public UObject
 	GENERATED_BODY()
 
 public:
-	static UAICamera* InternalCreateNewObject(UObject* Parent,aiCamera* InCamera);
+
+	friend  UAIScene;
 
 	/** The name of the camera.
 	*

@@ -3,6 +3,7 @@
 
 #include "AIMesh.h"
 
+#include "AIScene.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "UE_Assimp.h"
 
@@ -103,22 +104,3 @@ int UAIMesh::GetNumVertices()
 }
 
 
-UAIMesh* UAIMesh::InternalConstructNewAIMesh(aiMesh* InMesh, UObject* Parent)
-{
-	
-
-	//todo check if object is already created and skip creation and return object
-	//should be owned by AIScene object
-	if(!InMesh)
-	{
-		UE_LOG(LogTemp,Fatal,TEXT(" No assimp Mesh data  Found "))
-		return nullptr;
-	}else
-	{
-		UAIMesh* NewMeshData=	NewObject<UAIMesh>(Parent,UAIMesh::StaticClass(),NAME_None,RF_Transient);
-		NewMeshData->Mesh=InMesh;
-		return NewMeshData;
-	}
-
-	
-}
