@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIBone.h"
 #include "AIScene.h"
 #include "assimp/mesh.h"
 #include "UObject/NoExportTypes.h"
@@ -30,7 +31,8 @@ UFUNCTION(BlueprintCallable)
 void GetMeshDataForProceduralMesh(TArray<FVector>&Vertices,TArray<int32>& Triangles,TArray<FVector>& Normals, TArray<FVector2D>& UV0, TArray<FProcMeshTangent>& Tangents);
 UFUNCTION(BlueprintCallable,BlueprintPure)
 int GetNumVertices();
-
+UFUNCTION(BlueprintCallable,BlueprintPure)
+void  GetAllBones(TArray<FAIBone>& Bones);
 
 	private:
 	aiMesh* Mesh;

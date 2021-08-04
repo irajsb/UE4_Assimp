@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIBone.h"
 #include "AIScene.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "AssimpFunctionLibrary.generated.h"
@@ -39,4 +40,57 @@ UFUNCTION(BlueprintCallable)
  UFUNCTION(BlueprintCallable)
  static void ImportScenes(TArray<FString> InFilenames,UObject* ParentObject,TArray<UAIScene*>& Scenes);
  static FTransform aiMatToTransform(aiMatrix4x4 NodeTransform);
+
+
+
+
+
+ //Bones
+
+ //! The name of the bone.
+ UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ static FString GetBoneName(FAIBone Bone);
+ 
+ //! The number of vertices affected by this bone.
+ //! The maximum value for this member is #AI_MAX_BONE_WEIGHTS.
+ UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ static int GetNumOfWeights(FAIBone Bone);
+
+ //! The influence weights of this bone, by vertex index.
+ //TODO C_STRUCT aiVertexWeight *mWeights;
+
+
+
+ /**Assimp: Matrix that transforms from bone space to mesh space in bind pose.
+ *
+ * This matrix describes the position of the mesh
+ * in the local space of this bone when the skeleton was bound.
+ * Thus it can be used directly to determine a desired vertex position,
+ * given the world-space transform of the bone when animated,
+ * and the position of the vertex in mesh space.
+ *
+ * It is sometimes called an inverse-bind matrix,
+ * or inverse bind pose matrix.
+ * UE: Matrix Converted to Transform
+ */
+ UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ static FTransform GetBoneTransform(FAIBone Bone);
+
+	
+ // The bone armature node - used for skeleton conversion
+ // you must enable aiProcess_PopulateArmatureData to populate this
+ //	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ //	UAINode* GetArmatureNode();
+
+ // The bone node in the scene - used for skeleton conversion
+ // you must enable aiProcess_PopulateArmatureData to populate this
+ //	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ //	UAINode* GetNode();
+
+ //! The influence weights of this bone, by vertex index.
+ UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Bone")
+ static void GetBoneWeights(FAIBone Bone,TArray<FAIVertexWeight>& Weights);
+
+
+ 
 };

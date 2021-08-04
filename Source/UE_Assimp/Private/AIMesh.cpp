@@ -101,6 +101,16 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 int UAIMesh::GetNumVertices()
 {
 	return Mesh->mNumVertices;
+	
+}
+
+void UAIMesh::GetAllBones(TArray<FAIBone>& Bones)
+{
+	for (unsigned int  i = 0; i < Mesh->mNumBones; i++)
+	{
+	
+		Bones.Add(FAIBone(	Mesh->mBones[i]));
+	}
 }
 
 

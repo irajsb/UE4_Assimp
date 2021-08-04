@@ -315,3 +315,29 @@ if(NumOfThreads==0)
     Matrix.SetAxes(&Ax1,&Ax2,&Ax3,&Ax4);
  	return FTransform(Matrix);
  }
+
+ FString UAssimpFunctionLibrary::GetBoneName(FAIBone Bone)
+ {
+ 	return UTF8_TO_TCHAR(	Bone.Bone->mName.C_Str());
+ }
+
+ int UAssimpFunctionLibrary::GetNumOfWeights(FAIBone Bone)
+ {
+ 	return Bone.Bone->mNumWeights;
+ }
+
+ FTransform UAssimpFunctionLibrary::GetBoneTransform(FAIBone Bone)
+ {
+ 	return  UAssimpFunctionLibrary::aiMatToTransform(Bone.Bone->mOffsetMatrix);
+ }
+
+ void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight>& Weights)
+ {
+ 	for (unsigned int  i = 0; i < Bone.Bone->mNumWeights; i++)
+ 	{
+
+ 	 FAIVertexWeight Weight=	FAIVertexWeight(Bone.Bone->mWeights[i]);
+ 		Weights.Add(Weight);
+ 	}
+ }
+
