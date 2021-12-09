@@ -11,11 +11,22 @@
 
 
 #if PLATFORM_WINDOWS
-#include "Windows/COMPointer.h"
+#include "Windows/MinWindows.h"
+#include "Misc/FeedbackContextMarkup.h"
+
+#include "Microsoft/COMPointer.h"
+#include "Misc/Paths.h"
+#include "Misc/Guid.h"
+#include "HAL/FileManager.h"
+
 #include "Windows/AllowWindowsPlatformTypes.h"
 #include <commdlg.h>
+#include <shellapi.h>
 #include <shlobj.h>
+#include <Winver.h>
 #include <LM.h>
+#include <tlhelp32.h>
+#include <Psapi.h>
 #include "Windows/HideWindowsPlatformTypes.h"
 #endif
 
