@@ -3,6 +3,7 @@
 
 #include "AIMesh.h"
 
+#include "AIScene.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "UE_Assimp.h"
 
@@ -100,25 +101,16 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 int UAIMesh::GetNumVertices()
 {
 	return Mesh->mNumVertices;
+	
 }
 
-
-UAIMesh* UAIMesh::InternalConstructNewAIMesh(aiMesh* InMesh, UObject* Parent)
+void UAIMesh::GetAllBones(TArray<FAIBone>& Bones)
 {
+	for (unsigned int  i = 0; i < Mesh->mNumBones; i++)
+	{
 	
-
-	//todo check if object is already created and skip creation and return object
-	//should be owned by AIScene object
-	if(!InMesh)
-	{
-		UE_LOG(LogTemp,Fatal,TEXT(" No assimp Mesh data  Found "))
-		return nullptr;
-	}else
-	{
-		UAIMesh* NewMeshData=	NewObject<UAIMesh>(Parent,UAIMesh::StaticClass(),NAME_None,RF_Transient);
-		NewMeshData->Mesh=InMesh;
-		return NewMeshData;
+		Bones.Add(FAIBone(	Mesh->mBones[i]));
 	}
-
-	
 }
+
+

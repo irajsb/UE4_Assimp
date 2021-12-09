@@ -5,14 +5,6 @@
 
 #include "UE_Assimp.h"
 
-UAICamera* UAICamera::InternalCreateNewObject(UObject* Parent, aiCamera* InCamera)
-{
-	//todo check if object is already created and skip creation and return object 
-	UAICamera* Object=	NewObject<UAICamera>(Parent,UAICamera::StaticClass(),NAME_None,RF_Transient);
-	Object->camera= InCamera;
-	return Object;
-	
-}
 
 FString UAICamera::GetCameraName()
 {

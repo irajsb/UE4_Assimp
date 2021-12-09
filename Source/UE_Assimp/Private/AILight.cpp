@@ -5,14 +5,7 @@
 
 #include "UE_Assimp.h"
 
-UAILight* UAILight::InternalCreateNewObject(UObject* Parent, aiLight* InLight)
-{
 
-	//todo check if object is already created and skip creation and return object 
-	UAILight* Object=	NewObject<UAILight>(Parent,UAILight::StaticClass(),NAME_None,RF_Transient);
-	Object->Light= InLight;
-	return Object;
-}
 
 FString UAILight::GetLightName()
 {

@@ -7,43 +7,21 @@
 #include "ThirdParty/UE_AssimpLibrary/assimp/contrib/poly2tri/poly2tri/sweep/advancing_front.h"
 
 
-UAINode* UAINode::InternalCreateNewObject(UObject* Parent, aiNode* InNode)
-{
 
-	//todo check if object is already created and skip creation and return object 
-	UAINode* Object=	NewObject<UAINode>(Parent,UAINode::StaticClass(),NAME_None,RF_Transient);
-	Object->Node= InNode;
-	return Object;
+
+const TArray<UAINode*>& UAINode::GetChildNodes() const
+{
+		return  OwnedNodes;
 }
 
-void UAINode::GetChildNodes(bool& Empty,TArray<UAINode*>& Nodes)
-{
-	
-	Nodes.Reset();
-	if(Node->mNumChildren==0)
-	{
-		Empty=true;
-		return;
-	}else
-	{
-		for (unsigned Index=0 ;Index<Node->mNumChildren;Index++)
-		{
-			UAINode* NewNodeObject=UAINode::InternalCreateNewObject(this,Node->mChildren[Index]);
-			Nodes.Add(NewNodeObject);
-		}
-		Empty=false;
-	}
-	
-}
-
-FString UAINode::GetNodeName()
+FString UAINode::GetNodeName() const
 {
 
 return  UTF8_TO_TCHAR(	Node->mName.C_Str());
 
 }
 
-UAINode* UAINode::GetParentNode(bool& Success)
+UAINode* UAINode::GetParentNode(bool& Success) const
 {
 	Success=false;
 
@@ -53,7 +31,7 @@ if(Parent)
 return Parent;	
 }
 
-void UAINode::GetNodeTransform(FTransform& Transform)
+void UAINode::GetNodeTransform(FTransform& Transform) const
 {
 Transform= UAssimpFunctionLibrary::aiMatToTransform(Node->mTransformation);
 }
@@ -96,6 +74,25 @@ UAIScene* UAINode::GetScene()
 		}
 	}
 	return nullptr;
+}
+
+void UAINode::RegisterNewNode(aiNode* InNode)
+{
+	
+	UAINode* Object=	NewObject<UAINode>(this,UAINode::StaticClass(),NAME_None,RF_Transient);
+	Object->Node= InNode;
+	OwnedNodes.Add(Object);
+
+	if(InNode->mNumChildren!=0)
+	{
+		//Follow Chain of nodes to init child nodes 
+		for(unsigned Index=0;Index<InNode->mNumChildren;Index++)
+		{
+			Object->RegisterNewNode(InNode->mChildren[Index]);
+		}
+		
+	}
+	
 }
 
 

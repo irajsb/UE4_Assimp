@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 
+#include "AIScene.h"
 #include "assimp/light.h"
 #include "UObject/NoExportTypes.h"
 #include "AILight.generated.h"
@@ -57,7 +58,7 @@ class UE_ASSIMP_API UAILight : public UObject
 
 
 	public:
-	static UAILight* InternalCreateNewObject(UObject* Parent,aiLight* InLight);
+	friend  UAIScene;
 	
 	/** The name of the light source.
 	*
