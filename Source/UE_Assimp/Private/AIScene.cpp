@@ -23,6 +23,9 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 	//Setup Meshes
 	Object->OwnedMeshes.Reset();
 	Object->OwnedMeshes.AddUninitialized(Scene->mNumMeshes);
+	Object->OwnedLights.AddUninitialized(Scene->mNumLights);
+	Object->OwnedCameras.AddUninitialized(Scene->mNumCameras);
+	Object->OwnedMaterials.AddUninitialized(Scene->mNumMaterials);
 	//Add Meshes
 	if(Scene->HasMeshes())
 	{
@@ -50,12 +53,13 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 		{
 			UAILight* Light=	NewObject<UAILight>(Object,UAILight::StaticClass(),NAME_None,RF_Transient);
 			Light->Light=Scene->mLights[Index];
+			
 			Object->OwnedLights[Index]=Light;
 		}
 	}
 	if(Scene->HasMaterials())
 	{
-		for(unsigned Index=0;Index<Scene->mNumLights;Index++)
+		for(unsigned Index=0;Index<Scene->mNumMaterials;Index++)
 		{
 			UAIMaterial* Material=	NewObject<UAIMaterial>(Object,UAIMaterial::StaticClass(),NAME_None,RF_Transient);
 			Material->Material=Scene->mMaterials[Index];
@@ -104,6 +108,11 @@ const TArray<UAIMesh*>&  UAIScene::GetAllMeshes() const
 {
 
 return OwnedMeshes;	
+}
+
+const TArray<UAIMaterial*>& UAIScene::GetAllMaterials() const
+{
+	return  OwnedMaterials;
 }
 
 void UAIScene::BeginDestroy()

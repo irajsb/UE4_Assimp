@@ -35,9 +35,10 @@ public class UE_AssimpLibrary : ModuleRules
 			// Delay-load the DLL, so we can load it from the right place first
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp-vc142-mt.dll"));
 
-
+			string BinaryFolder=BinFolder(Target);
+			Directory.CreateDirectory(BinaryFolder);
 			string  AssimpDll = Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "assimp-vc142-mt.dll");
-			string BinPath =Path.Combine(ModuleDirectory,BinFolder(Target),"assimp-vc142-mt.dll");
+			string BinPath =Path.Combine(ModuleDirectory, BinaryFolder, "assimp-vc142-mt.dll");
 			
 		 CopyFile(AssimpDll,BinPath);
 			  // Ensure that the DLL is staged along with the executable
@@ -57,6 +58,8 @@ public class UE_AssimpLibrary : ModuleRules
 		}
 		try
 		{
+			//Make Folder
+		
 			System.IO.File.Copy(Source, Dest, true);
 		}
 		catch (System.Exception ex)

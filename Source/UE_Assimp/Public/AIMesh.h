@@ -33,7 +33,8 @@ UFUNCTION(BlueprintCallable,BlueprintPure)
 int GetNumVertices();
 UFUNCTION(BlueprintCallable,BlueprintPure)
 void  GetAllBones(TArray<FAIBone>& Bones);
-
+UFUNCTION(BlueprintCallable,BlueprintPure)
+FString GetMeshName() const;	
 	private:
 	aiMesh* Mesh;
 };

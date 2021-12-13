@@ -14,6 +14,28 @@ enum ETaskResult
 	Fail
 };
 
+// ----------------------------------------------------------------------------------
+/** Standard return type for some library functions.
+* Rarely used, and if, mostly in the C API.
+*/
+UENUM(Blueprintable,BlueprintType)
+ enum EAssimpReturn {
+	/** Indicates that a function was successful */
+	ReturnSuccess = 0x0,
+
+    /** Indicates that a function failed */
+  ReturnFail = -0x1,
+
+    /** Indicates that not enough memory was available
+    * to perform the requested operation
+    */
+    ReturnOutOfMemory = -0x3,
+
+
+
+    /// @endcond
+};
+
 class FUE_AssimpModule : public IModuleInterface
 {
 public:

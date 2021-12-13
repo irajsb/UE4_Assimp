@@ -113,4 +113,9 @@ void UAIMesh::GetAllBones(TArray<FAIBone>& Bones)
 	}
 }
 
+FString UAIMesh::GetMeshName() const
+{
+	return  UTF8_TO_TCHAR(Mesh->mName.C_Str());
+}
+
 

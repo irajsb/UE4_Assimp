@@ -37,6 +37,10 @@ class UE_ASSIMP_API UAIScene : public UObject
 	*/
 	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Scene")
 	 const TArray<UAIMesh*>&  GetAllMeshes() const;
+
+
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Scene")
+     const TArray<UAIMaterial*>&  GetAllMaterials() const;
 	/** The root node of the hierarchy.
 	*
 	* There will always be at least the root node if the import
