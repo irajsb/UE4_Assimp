@@ -14,7 +14,12 @@
 #include "Windows/MinWindows.h"
 #include "Misc/FeedbackContextMarkup.h"
 
+#if ENGINE_MINOR_VERSION >25
 #include "Microsoft/COMPointer.h"
+#else
+#include "Windows/COMPointer.h"
+#endif
+
 #include "Misc/Paths.h"
 #include "Misc/Guid.h"
 #include "HAL/FileManager.h"
