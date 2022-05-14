@@ -14,7 +14,7 @@
 #include "Windows/MinWindows.h"
 #include "Misc/FeedbackContextMarkup.h"
 
-#if ENGINE_MINOR_VERSION >25
+#if ENGINE_MINOR_VERSION >26
 #include "Microsoft/COMPointer.h"
 #else
 #include "Windows/COMPointer.h"

@@ -26,19 +26,19 @@ public class UE_AssimpLibrary : ModuleRules
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library
-			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory,"assimp" ,"lib", "Release", "assimp-vc142-mt.lib"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory,"assimp" ,"lib", "Release", "assimp.lib"));
 
 
-			//RuntimeDependencies.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp-vc142-mt.dll"));
+			//RuntimeDependencies.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp.dll"));
 
 			PublicIncludePaths.Add(Path.Combine(ModuleDirectory,"assimp" , "include"));
 			// Delay-load the DLL, so we can load it from the right place first
-			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp-vc142-mt.dll"));
+			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp.dll"));
 
 			string BinaryFolder=BinFolder(Target);
 			Directory.CreateDirectory(BinaryFolder);
-			string  AssimpDll = Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "assimp-vc142-mt.dll");
-			string BinPath =Path.Combine(ModuleDirectory, BinaryFolder, "assimp-vc142-mt.dll");
+			string  AssimpDll = Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "assimp.dll");
+			string BinPath =Path.Combine(ModuleDirectory, BinaryFolder, "assimp.dll");
 			
 		 CopyFile(AssimpDll,BinPath);
 			  // Ensure that the DLL is staged along with the executable
