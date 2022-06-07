@@ -4,6 +4,7 @@ Features:
 - Async Loading
 - Users can use multpile approaches for maximum flexiblity. 
 - Garbage collection using unreal GC and integration with UObjects .
+- Embedded Texture import .
 
 
 |             |  |
