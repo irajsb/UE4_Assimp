@@ -56,8 +56,10 @@ class UE_ASSIMP_API UAIScene : public UObject
 	const TArray<UAICamera*>& GetAllCameras() const;
 
 
-
-
+//Texture
+//! Returns an embedded texture. if null then check path or texture is not embedded and must be imported using unreal default import texture function
+	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Scene")
+	UTexture2D* GetEmbeddedTexture(FString FilePath,bool bIsNormalMap);
 
 	
 
@@ -67,7 +69,7 @@ class UE_ASSIMP_API UAIScene : public UObject
 
 	private:
 
-	
+	EPixelFormat GetPixelFormat(const aiTexture* Texture);
 	
 
 	//For Object Creation

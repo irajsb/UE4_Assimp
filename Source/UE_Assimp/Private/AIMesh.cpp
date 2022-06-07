@@ -72,16 +72,25 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	Vertices.Reset();
 	Triangles.Reset();
 	Normals.Reset();
+	UV0.Reset();
 
 	Vertices.AddUninitialized(Mesh->mNumVertices);
 	Normals.AddUninitialized(Mesh->mNumVertices);
 	Tangents.AddUninitialized(Mesh->mNumVertices);
+	UV0.AddUninitialized(Mesh->mNumVertices);
+	
 	
 	for (unsigned int Index=0;Index<Mesh->mNumVertices;Index++)
 	{
 		Normals[Index]= ToVector(Mesh->mNormals[Index]);
 		Vertices[Index]=ToVectorCM(Mesh->mVertices[Index]);
 		Tangents[Index].TangentX=ToVector(Mesh->mTangents[Index]);
+
+		if(Mesh->HasTextureCoords(0))
+		{
+			UV0[Index].X=Mesh->mTextureCoords[0][Index].x;
+			UV0[Index].Y=Mesh->mTextureCoords[0][Index].y;
+		}
 		
 	}
 
@@ -116,6 +125,11 @@ void UAIMesh::GetAllBones(TArray<FAIBone>& Bones)
 FString UAIMesh::GetMeshName() const
 {
 	return  UTF8_TO_TCHAR(Mesh->mName.C_Str());
+}
+
+int UAIMesh::GetMaterialIndex()
+{
+	return Mesh->mMaterialIndex;
 }
 
 

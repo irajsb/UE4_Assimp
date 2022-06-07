@@ -243,7 +243,8 @@ if(NumOfThreads==0)
 						aiProcess_CalcTangentSpace       |
 							aiProcess_Triangulate            |
 							aiProcess_JoinIdenticalVertices  |
-								aiProcess_SortByPType);
+								aiProcess_SortByPType|
+								aiProcess_FlipUVs);
  				if( !scene) {
 				UE_LOG(LogTemp,Error,TEXT("Error importing scene in assimpfunction library async"))
  	
@@ -298,7 +299,8 @@ if(NumOfThreads==0)
 	aiProcess_CalcTangentSpace       |
 	aiProcess_Triangulate            |
 	aiProcess_JoinIdenticalVertices  |
-	aiProcess_SortByPType);
+	aiProcess_SortByPType|
+	aiProcess_FlipUVs);
  		
  		
  				
