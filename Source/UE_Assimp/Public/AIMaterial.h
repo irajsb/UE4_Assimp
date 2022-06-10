@@ -296,9 +296,7 @@ enum EAiTextureType {
 #endif
 };
 
-// -------------------------------------------------------------------------------
-// Get a string for a given aiTextureType
- FString TextureTypeToString(enum EAiTextureType in);
+
 
 
 

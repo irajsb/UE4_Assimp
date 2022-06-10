@@ -23,6 +23,8 @@ public class UE_AssimpLibrary : ModuleRules
 	{
 		Type = ModuleType.External;
 
+		
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory,"assimp" , "include"));
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library
@@ -31,7 +33,7 @@ public class UE_AssimpLibrary : ModuleRules
 
 			//RuntimeDependencies.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp.dll"));
 
-			PublicIncludePaths.Add(Path.Combine(ModuleDirectory,"assimp" , "include"));
+			
 			// Delay-load the DLL, so we can load it from the right place first
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp.dll"));
 

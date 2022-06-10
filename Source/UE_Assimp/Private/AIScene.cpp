@@ -206,8 +206,8 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 	else
 	{//Texture is compressed read it from memory
 		const size_t size = EmbedTexture->mWidth;
-		auto result =reinterpret_cast<const unsigned char*>(EmbedTexture->pcData);
-		TArray<uint8> Buffer(result,size);
+		const auto BinaryData =reinterpret_cast<const unsigned char*>(EmbedTexture->pcData);
+		const TArray<uint8> Buffer(BinaryData,size);
     			
     		
 		Result= UKismetRenderingLibrary::ImportBufferAsTexture2D(GetWorld(),Buffer);
