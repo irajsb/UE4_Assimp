@@ -51,7 +51,7 @@ bool UAINode::GetAllMeshes(TArray<UAIMesh*>& Meshes)
 		}
 	}else
 	{
-		UE_LOG(LogTemp,Error,TEXT("No Scene Found "));
+		UE_LOG(LogAssimp,Error,TEXT("No Scene Found "));
 		return  false;
 	}
 	return true;

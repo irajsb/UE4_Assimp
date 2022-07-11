@@ -12,12 +12,12 @@ void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 
 	if(!this)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh"));
 		return;
 	}
 	if(!Mesh)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh Data"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh Data"));
 		return;
 	}
 Vertices.Empty();
@@ -34,12 +34,12 @@ void UAIMesh::GetMeshNormals(TArray<FVector>& Normals)
 {
 	if(!this)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh"));
 		return;
 	}
 	if(!Mesh)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh Data"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh Data"));
 		return;
 	}
 	Normals.Empty();
@@ -59,12 +59,12 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	
 	if(!this)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh"));
 		return;
 	}
 	if(!Mesh)
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("No Mesh Data"));
+		UE_LOG(LogAssimp,Fatal,TEXT("No Mesh Data"));
 		return;
 	}
 
@@ -78,6 +78,10 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	Normals.AddUninitialized(Mesh->mNumVertices);
 	if (Mesh->HasTangentsAndBitangents()) {
 		Tangents.AddUninitialized(Mesh->mNumVertices);
+	}
+	else {
+		//
+		UE_LOG(LogAssimp, Warning, TEXT("Mesh is missing Tangents"));
 	}
 	UV0.AddUninitialized(Mesh->mNumVertices);
 	

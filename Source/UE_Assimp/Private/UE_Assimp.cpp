@@ -10,7 +10,7 @@
 #include "Interfaces/IPluginManager.h"
 
 #define LOCTEXT_NAMESPACE "FUE_AssimpModule"
-
+DEFINE_LOG_CATEGORY(LogAssimp);
 void FUE_AssimpModule::StartupModule()
 {
 

@@ -98,7 +98,7 @@ TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform,TSubclassO
 		
 	}else
 	{
-		UE_LOG(LogTemp,Error,TEXT(" Assimp scene is not valid "));
+		UE_LOG(LogAssimp,Error,TEXT(" Assimp scene is not valid "));
 		 
 	}
 	
@@ -151,7 +151,7 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 	
 	if(!EmbedTexture)
 	{
-		UE_LOG(LogTemp,Error,TEXT("Texture was not found!"));
+		UE_LOG(LogAssimp,Error,TEXT("Texture was not found!"));
 		return  nullptr;
 	}
 
@@ -159,7 +159,7 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 	const float TextureHeight=EmbedTexture->mHeight;
 	const EPixelFormat PixelFormat =PF_B8G8R8A8;
 	
-	UE_LOG(LogTemp,Log,TEXT("Importing embedded texture X: %d  Y: %d"),TextureWidth,TextureHeight);
+	UE_LOG(LogAssimp,Log,TEXT("Importing embedded texture X: %d  Y: %d"),TextureWidth,TextureHeight);
 	if (EmbedTexture->mHeight != 0)
 	{
 		Result = UTexture2D::CreateTransient(EmbedTexture->mWidth, EmbedTexture->mHeight, PixelFormat);
@@ -252,7 +252,7 @@ EPixelFormat UAIScene::GetPixelFormat(const aiTexture* Texture)
 		return EPixelFormat::PF_R8G8B8A8;
 	}else
 	{
-		UE_LOG(LogTemp,Fatal,TEXT("Pixel format not implemented"));
+		UE_LOG(LogAssimp,Fatal,TEXT("Pixel format not implemented"));
 	}
 	return  EPixelFormat::PF_Unknown;
 }

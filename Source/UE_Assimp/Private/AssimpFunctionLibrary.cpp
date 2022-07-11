@@ -247,7 +247,7 @@ if(NumOfThreads==0)
 								aiProcess_SortByPType|
 								aiProcess_FlipUVs);
  				if( !scene) {
-				UE_LOG(LogTemp,Error,TEXT("Error importing scene in assimpfunction library async"))
+				UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library async"))
  	
  					}else
  					{
@@ -267,7 +267,7 @@ if(NumOfThreads==0)
 							const	float EndTime=ParentObject->GetWorld()->GetTimeSeconds();
 							const float TotalTime=EndTime-StartTime;
 								OnImportSceneComplete.Execute(AIScenes,TotalTime);
-								UE_LOG(LogTemp,Log,TEXT("start %f end %f  total %f"),StartTime,EndTime,TotalTime);
+								UE_LOG(LogAssimp,Log,TEXT("start %f end %f  total %f"),StartTime,EndTime,TotalTime);
 								
 							}
 						});
@@ -304,7 +304,7 @@ if(NumOfThreads==0)
  		
  				
  		if( !scene) {
- 			UE_LOG(LogTemp,Error,TEXT("Error importing scene in assimpfunction library "))
+ 			UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library "))
  	
  				}
  			else
