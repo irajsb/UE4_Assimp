@@ -23,7 +23,7 @@ public class UE_AssimpLibrary : ModuleRules
 	{
 		Type = ModuleType.External;
 
-		
+		string BinaryFolder = BinFolder(Target);
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory,"assimp" , "include"));
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
@@ -37,7 +37,7 @@ public class UE_AssimpLibrary : ModuleRules
 			// Delay-load the DLL, so we can load it from the right place first
 			PublicDelayLoadDLLs.Add(Path.Combine(ModuleDirectory,"assimp" , "bin","Release","assimp.dll"));
 
-			string BinaryFolder=BinFolder(Target);
+			
 			Directory.CreateDirectory(BinaryFolder);
 			string  AssimpDll = Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "assimp.dll");
 			string BinPath =Path.Combine(ModuleDirectory, BinaryFolder, "assimp.dll");
@@ -46,10 +46,10 @@ public class UE_AssimpLibrary : ModuleRules
 			  // Ensure that the DLL is staged along with the executable
 		//	RuntimeDependencies.Add("$(PluginDir)/Binaries/ThirdParty/UE_AssimpLibrary/Win64/ExampleLibrary.dll");
         }
-        else if (Target.Platform == UnrealTargetPlatform.Mac)
+        else if (Target.Platform == UnrealTargetPlatform.Android)
         {
-          
-        }
+			PublicAdditionalLibraries.Add(Path.Combine(BinaryFolder, "arm64-v8a", "libassimp.so"));
+		}
 	}
 	public void CopyFile(string Source, string Dest)
 	{

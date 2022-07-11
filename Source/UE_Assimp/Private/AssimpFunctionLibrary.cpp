@@ -5,7 +5,6 @@
 #include "AIScene.h"
 #include "assimp/cimport.h"
 #include "assimp/Importer.hpp"
-#include "assimp/postprocess.h"
 #include "assimp/scene.h"
 
 
@@ -291,18 +290,16 @@ if(NumOfThreads==0)
  }
 
  void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
-	 TArray<UAIScene*>& Scenes)
+	 TArray<UAIScene*>& Scenes,int Flags)
  {
- 	
+
+
+
+	
 
  	for( FString FileName:InFilenames)
  	{
- 		const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),
-	aiProcess_CalcTangentSpace       |
-	aiProcess_Triangulate            |
-	aiProcess_JoinIdenticalVertices  |
-	aiProcess_SortByPType|
-	aiProcess_FlipUVs);
+ 		const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),Flags);
  		
  		
  				

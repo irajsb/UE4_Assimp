@@ -76,7 +76,9 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 
 	Vertices.AddUninitialized(Mesh->mNumVertices);
 	Normals.AddUninitialized(Mesh->mNumVertices);
-	Tangents.AddUninitialized(Mesh->mNumVertices);
+	if (Mesh->HasTangentsAndBitangents()) {
+		Tangents.AddUninitialized(Mesh->mNumVertices);
+	}
 	UV0.AddUninitialized(Mesh->mNumVertices);
 	
 	
@@ -84,7 +86,10 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	{
 		Normals[Index]= ToVector(Mesh->mNormals[Index]);
 		Vertices[Index]=ToVectorCM(Mesh->mVertices[Index]);
-		Tangents[Index].TangentX=ToVector(Mesh->mTangents[Index]);
+
+		if (Mesh->mTangents) {
+			Tangents[Index].TangentX = ToVector(Mesh->mTangents[Index]);
+		}
 
 		if(Mesh->HasTextureCoords(0))
 		{
