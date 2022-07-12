@@ -2,9 +2,11 @@
 # Assimp  5.4.2 for  Unreal engine 
 Features:
 - Async Loading
-- Users can use multpile approaches for maximum flexiblity. 
-- Garbage collection using unreal GC and integration with UObjects .
-- Embedded Texture import .
+- Users can use multpile approaches for maximum flexiblity
+- Garbage collection using unreal GC and integration with UObjects 
+- Embedded Texture import 
+- Supports 57 different file formats for reading
+- Supports auto generating missing data such as normals
 
 
 |             |  |
