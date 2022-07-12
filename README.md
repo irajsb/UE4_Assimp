@@ -1,5 +1,5 @@
 ![](https://img.shields.io/badge/Status-Under%20Development-red) ![](https://img.shields.io/badge/Contribution-Help%20Needed-blue)
-# Assimp  5.4.2 for  Unreal engine 
+# Assimp Mesh Importer  5.4.2 for  Unreal engine 
 Features:
 - Async Loading
 - Users can use multpile approaches for maximum flexiblity
