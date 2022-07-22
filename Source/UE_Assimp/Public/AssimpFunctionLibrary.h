@@ -18,8 +18,8 @@
 
 
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnProgressUpdated,float,NormalPercentage,UAIScene* ,ImportedScene);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete,const TArray<UAIScene*>&,ImportedScenes,float ,TotalTimeElapsed);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnProgressUpdated,double,NormalPercentage,UAIScene* ,ImportedScene);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete,const TArray<UAIScene*>&,ImportedScenes,double ,TotalTimeElapsed);
 UCLASS()
 class UE_ASSIMP_API UAssimpFunctionLibrary : public UBlueprintFunctionLibrary
 {
