@@ -196,7 +196,7 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 					Pixels[4 * CurrentPixelIndex + 3] = CurrentPixel.a; //set A channel always to maximum
 				}
 			}
-			FMemory::Memcpy(MipData, Pixels, Result->PlatformData->Mips[0].BulkData.GetBulkDataSize());
+			FMemory::Memcpy(MipData, Pixels,PlatformData->Mips[0].BulkData.GetBulkDataSize());
 			
 		}
 		

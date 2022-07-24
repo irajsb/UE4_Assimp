@@ -16,10 +16,12 @@
 
 
 
+//Check if this is necesarry for UE5
+
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnProgressUpdated,  float, NormalPercentage, UAIScene*, ImportedScene);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete, const TArray<UAIScene*>&, ImportedScenes, float, TotalTimeElapsed);
 
 
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnProgressUpdated,double,NormalPercentage,UAIScene* ,ImportedScene);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete,const TArray<UAIScene*>&,ImportedScenes,double ,TotalTimeElapsed);
 UCLASS()
 class UE_ASSIMP_API UAssimpFunctionLibrary : public UBlueprintFunctionLibrary
 {
@@ -42,7 +44,7 @@ static void OpenFileDialogue(FString DialogTitle,FString DefaultPath,FString Def
 	static bool FileDialogShared(bool bSave, const void* ParentWindowHandle, const FString& DialogTitle, const FString& DefaultPath, const FString& DefaultFile, const FString& FileTypes, uint32 Flags, TArray<FString>& OutFilenames, int32& OutFilterIndex);
 //Experimental
 UFUNCTION(BlueprintCallable)
- static void ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete);
+ static void ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject, int Flags,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete);
 //Flags: You can use post process nodes and use | (bitwise Or) between them to create any combination of flags. Also We recommend using preset flags. Flip UV flag is needed for correct urneal engine meshes
  UFUNCTION(BlueprintCallable)
  static void ImportScenes(TArray<FString> InFilenames,UObject* ParentObject,TArray<UAIScene*>& Scenes,int Flags);

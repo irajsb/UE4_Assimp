@@ -208,7 +208,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	return false;
 }
 
- void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
+ void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject, int Flags,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
  {
 
 //I'm a noob in realms of async if you find a better way to keep data do a pull request
@@ -234,18 +234,14 @@ if(NumOfThreads==0)
 
  				
  		
- 				AsyncTask(ENamedThreads::AnyHiPriThreadHiPriTask,[ParentObject,FileName,OnProgressUpdated,OnImportSceneComplete]()
+ 				AsyncTask(ENamedThreads::AnyHiPriThreadHiPriTask,[ParentObject,FileName,OnProgressUpdated,OnImportSceneComplete,Flags]()
 				{ 
 
 
  			
  				
  						const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),
-						aiProcess_CalcTangentSpace       |
-							aiProcess_Triangulate            |
-							aiProcess_JoinIdenticalVertices  |
-								aiProcess_SortByPType|
-								aiProcess_FlipUVs);
+						Flags);
  				if( !scene) {
 				UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library async"))
  	
