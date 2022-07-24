@@ -27,7 +27,7 @@ Directional   ,
 //! A point light source has a well-defined position
 //! in space but no direction - it emits light in all
 //! directions. A normal bulb is a point light.
-Point         ,
+PointLight    ,
 
 //! A spot light source emits light in a specific
 //! angle. It has a position and a direction it is pointing to.
