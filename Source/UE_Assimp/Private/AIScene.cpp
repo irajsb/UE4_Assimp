@@ -170,13 +170,13 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 
 #if ENGINE_MAJOR_VERSION>4
 
-			FTexturePlatformData* PlatformData = Result->GetPlatformData();
+			FByteBulkData BulkData = Result->GetPlatformData()->Mips[0].BulkData;
 #else
 
-			FTexturePlatformData* PlatformData = Result->PlatformData;
+			FByteBulkData BulkData = Result->PlatformData->Mips[0].BulkData;
 #endif
 			Result->bNotOfflineProcessed = true;
-			uint8* MipData = static_cast<uint8*>(PlatformData->Mips[0].BulkData.Lock(LOCK_READ_WRITE));
+			uint8* MipData = static_cast<uint8*>(BulkData.Lock(LOCK_READ_WRITE));
 
 		
 			//an array for pixels
@@ -196,18 +196,14 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath,bool bIsNormalMap)
 					Pixels[4 * CurrentPixelIndex + 3] = CurrentPixel.a; //set A channel always to maximum
 				}
 			}
-			FMemory::Memcpy(MipData, Pixels,PlatformData->Mips[0].BulkData.GetBulkDataSize());
+			FMemory::Memcpy(MipData, Pixels, BulkData.GetBulkDataSize());
 			
-		}
 		
  
-	
-	
-		
-				
-		Result->PlatformData->Mips[0].BulkData.Unlock();
+			BulkData.Unlock();
 
-		Result->UpdateResource();
+			Result->UpdateResource();
+		}
 
 		 
 	}
