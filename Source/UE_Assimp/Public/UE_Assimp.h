@@ -2,11 +2,15 @@
 
 #pragma once
 
+#include "assimp/Logger.hpp"
+#include "assimp/LogStream.hpp"
 #include "Modules/ModuleManager.h"
-#define ToVector(In) FVector( In.y, In.x, In.z);
-#define ToVectorCM(In) FVector( In.y*100, In.x*100, In.z*100);//convert Meters to cm
-#define MatTranslation(In) FVector(In.b4*100,In.a4*100,In.c4*100)
+#define ToVector(In) FVector(In.x, In.z, In.y)
+#define ToVectorCM(In) FVector(In.x*100, In.z*100, In.y*100)//convert Meters to cm
 DECLARE_LOG_CATEGORY_EXTERN(LogAssimp, Log, All);
+
+
+
 UENUM(BlueprintType)
 enum ETaskResult
 {
@@ -14,6 +18,54 @@ enum ETaskResult
 	Fail
 };
 
+
+// Example stream
+class UEAssimpStream :
+		public Assimp::Logger
+{
+public:
+	// Constructor
+	UEAssimpStream()
+	{
+		// empty
+	}
+        
+	// Destructor
+	virtual ~UEAssimpStream() override
+	{
+		// empty
+	}
+	// Write womethink using your own functionality
+	virtual void OnError(const char* message) override
+	{
+		UE_LOG(LogAssimp,Error,TEXT("%s"),*FString(message));
+	}
+	virtual void OnDebug(const char* message) override
+	{
+		UE_LOG(LogAssimp,Log,TEXT("%s"),*FString(message));
+	}
+	virtual void OnInfo(const char* message) override
+	{
+		UE_LOG(LogAssimp,Log,TEXT("%s"),*FString(message));
+	}
+	virtual void OnWarn(const char* message) override
+	{
+		UE_LOG(LogAssimp,Warning,TEXT("%s"),*FString(message));
+	}
+
+	virtual void OnVerboseDebug(const char* message) override
+	{
+		UE_LOG(LogAssimp,Warning,TEXT("%s"),*FString(message));
+	}
+	virtual bool attachStream(Assimp::LogStream* pStream, unsigned severity) override
+	{
+		return false;
+	}
+	virtual bool detachStream(Assimp::LogStream* pStream, unsigned severity) override
+	{
+		return false;
+	}
+};
 // ----------------------------------------------------------------------------------
 /** Standard return type for some library functions.
 * Rarely used, and if, mostly in the C API.

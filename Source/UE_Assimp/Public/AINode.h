@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AIScene.h"
 
 
 #include "UE_Assimp.h"
@@ -17,16 +18,13 @@
 //todo add metadata support
 class UAIMesh;
 class UAIScene;
-UCLASS()
+UCLASS(BlueprintType)
 class UE_ASSIMP_API UAINode : public UObject
 {
 	GENERATED_BODY()
 public:
 
-
-	friend  UAIScene;
-	public:
-	
+	void Setup(aiNode* InNode, UAIScene* Scene, const aiMatrix4x4& ParentTransform);
 	/** The name of the node.
 	*
 	* The name might be empty (length of zero) but all nodes which
@@ -49,26 +47,31 @@ public:
 	* surrounded by @verbatim <> @endverbatim e.g.
 	*  @verbatim<DummyRootNode> @endverbatim.
 	*/
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	FString GetNodeName() const;
 	/** Parent node. nullptr if this node is the root node. */
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	UAINode* GetParentNode(bool& Success) const;
 	/** The child nodes of this node. */
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	const TArray<UAINode*>& GetChildNodes() const;
 	/** The transformation relative to the node's parent. */
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
-	void  GetNodeTransform(FTransform& Transform) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	void GetNodeTransform(FTransform& Transform) const;
+
+	/** The transformation relative to Root */
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	FTransform GetRootTransform();
 	//false if empty
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	bool GetAllMeshes(TArray<UAIMesh*>& Meshes);
-	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Node")
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	UAIScene* GetScene();
 
+private:
+	void RegisterNewNode(aiNode* InNode, UAIScene* Scene, const aiMatrix4x4& ParentTransform);
 
-	void RegisterNewNode(aiNode* InNode);
-	private:
-	TArray<UAINode*>OwnedNodes;
+	TArray<UAINode*> OwnedNodes;
+	FTransform WorldTransform;
 	aiNode* Node;
 };

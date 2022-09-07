@@ -39,6 +39,9 @@ class UE_ASSIMP_API UAIScene : public UObject
 	 const TArray<UAIMesh*>&  GetAllMeshes() const;
 
 
+
+
+
 	UFUNCTION(BlueprintCallable,BlueprintPure,Category="Assimp|Scene")
      const TArray<UAIMaterial*>&  GetAllMaterials() const;
 	/** The root node of the hierarchy.
@@ -65,11 +68,11 @@ class UE_ASSIMP_API UAIScene : public UObject
 
 
 
-	void RegisterNewNode(aiNode* InRootNode);
 
-	private:
 
-	EPixelFormat GetPixelFormat(const aiTexture* Texture);
+	float SceneScale;
+
+	static EPixelFormat GetPixelFormat(const aiTexture* Texture);
 	
 
 	//For Object Creation

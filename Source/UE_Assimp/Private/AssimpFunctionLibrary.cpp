@@ -1,12 +1,14 @@
- // Fill out your copyright notice in the Description page of Project Settings.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 
 #include "AssimpFunctionLibrary.h"
-#include "AIScene.h"
-#include "assimp/cimport.h"
-#include "assimp/Importer.hpp"
-#include "assimp/scene.h"
 
+#include "AIBone.h"
+#include "AIScene.h"
+#include "UE_Assimp.h"
+#include "assimp/cimport.h"
+#include "assimp/DefaultLogger.hpp"
+#include "assimp/scene.h"
 
 
 #if PLATFORM_WINDOWS
@@ -19,18 +21,21 @@
 #define MAX_FILENAME_STR 65536
 
 
+void UAssimpFunctionLibrary::OpenFileDialogue(FString DialogTitle, FString DefaultPath, FString DefaultFile,
+                                              const FString& FileTypes, uint8 Flags, TArray<FString>& OutFilenames,
+                                              bool MultiSelect, bool& Success)
+{
+	const void* ParentWindowHandle = nullptr;
+	int OutFilterIndex;
+	Success = FileDialogShared(false, ParentWindowHandle, DialogTitle, DefaultPath, DefaultFile, FileTypes, Flags,
+	                           OutFilenames, OutFilterIndex);
+}
 
 
- void UAssimpFunctionLibrary::OpenFileDialogue(FString DialogTitle,FString DefaultPath,FString DefaultFile, const FString& FileTypes, uint8 Flags, TArray<FString>& OutFilenames,bool MultiSelect,bool &Success)
- {
- 	void* ParentWindowHandle=nullptr;
- 	int OutFilterIndex;
- Success=	FileDialogShared(false, ParentWindowHandle, DialogTitle, DefaultPath, DefaultFile, FileTypes, Flags, OutFilenames, OutFilterIndex );
-
- }
-
-
-bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWindowHandle, const FString& DialogTitle, const FString& DefaultPath, const FString& DefaultFile, const FString& FileTypes, uint32 Flags, TArray<FString>& OutFilenames, int32& OutFilterIndex)
+bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWindowHandle, const FString& DialogTitle,
+                                              const FString& DefaultPath, const FString& DefaultFile,
+                                              const FString& FileTypes, uint32 Flags, TArray<FString>& OutFilenames,
+                                              int32& OutFilterIndex)
 {
 #pragma region Windows
 	//FScopedSystemModalMode SystemModalScope;
@@ -40,11 +45,12 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 
 	// Convert the forward slashes in the path name to backslashes, otherwise it'll be ignored as invalid and use whatever is cached in the registry
 	WCHAR Pathname[MAX_FILENAME_STR];
-	FCString::Strcpy(Pathname, MAX_FILENAME_STR, *(FPaths::ConvertRelativePathToFull(DefaultPath).Replace(TEXT("/"), TEXT("\\"))));
+	FCString::Strcpy(Pathname, MAX_FILENAME_STR,
+	                 *(FPaths::ConvertRelativePathToFull(DefaultPath).Replace(TEXT("/"), TEXT("\\"))));
 
 	// Convert the "|" delimited list of filetypes to NULL delimited then add a second NULL character to indicate the end of the list
 	WCHAR FileTypeStr[MAX_FILETYPES_STR];
-	WCHAR* FileTypesPtr = NULL;
+	const WCHAR* FileTypesPtr = nullptr;
 	const int32 FileTypesLen = FileTypes.Len();
 
 	// Nicely formatted file types for lookup later and suitable to append to filenames without extensions
@@ -62,7 +68,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 		if (Extension != TEXT("*.*"))
 		{
 			// Add to the clean extension list, first removing the * wildcard from the extension
-			int32 WildCardIndex = Extension.Find(TEXT("*"));
+			const int32 WildCardIndex = Extension.Find(TEXT("*"));
 			CleanExtensionList.Add(WildCardIndex != INDEX_NONE ? Extension.RightChop(WildCardIndex + 1) : Extension);
 		}
 	}
@@ -157,7 +163,8 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 					SelectedFile = FString(Pos);
 					new(OutFilenames) FString(DirectoryOrSingleFileName / SelectedFile);
 					Pos += SelectedFile.Len() + 1;
-				} while (Pos[0] != 0);
+				}
+				while (Pos[0] != 0);
 			}
 		}
 		else
@@ -169,7 +176,9 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 		OutFilterIndex = ofn.nFilterIndex - 1;
 
 		// Get the extension to add to the filename (if one doesnt already exist)
-		FString Extension = CleanExtensionList.IsValidIndex(OutFilterIndex) ? CleanExtensionList[OutFilterIndex] : TEXT("");
+		FString Extension = CleanExtensionList.IsValidIndex(OutFilterIndex)
+			                    ? CleanExtensionList[OutFilterIndex]
+			                    : TEXT("");
 
 		// Make sure all filenames gathered have their paths normalized and proper extensions added
 		for (auto OutFilenameIt = OutFilenames.CreateIterator(); OutFilenameIt; ++OutFilenameIt)
@@ -208,149 +217,71 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	return false;
 }
 
- void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject, int Flags,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
- {
 
-//I'm a noob in realms of async if you find a better way to keep data do a pull request
- 	static float StartTime=0.0f;
- 	static  int NumOfThreads=0;
- 	static int TotalThreads=0;
- 	NumOfThreads=TotalThreads=InFilenames.Num();
- 	static TArray<UAIScene*> AIScenes;
- 	AIScenes.Empty();
-	StartTime=ParentObject->GetWorld()->GetTimeSeconds();
- 
-if(NumOfThreads==0)
+void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
+                                          TArray<UAIScene*>& Scenes, int Flags)
 {
-	return;
-}
- 		
+	Assimp::DefaultLogger::set(new UEAssimpStream());
 
- 		
- 			
- 			
- 			for( FString FileName:InFilenames)
- 			{
-
- 				
- 		
- 				AsyncTask(ENamedThreads::AnyHiPriThreadHiPriTask,[ParentObject,FileName,OnProgressUpdated,OnImportSceneComplete,Flags]()
-				{ 
+	for (FString FileName : InFilenames)
+	{
+		const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), Flags);
 
 
- 			
- 				
- 						const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),
-						Flags);
- 				if( !scene) {
-				UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library async"))
- 	
- 					}else
- 					{
- 						
-					
-						AsyncTask(ENamedThreads::GameThread,[ParentObject,scene,OnProgressUpdated,OnImportSceneComplete]()
-						{
-							
-							UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene);
-								
-							NumOfThreads=NumOfThreads-1;
-							AIScenes.Add(Object);
-							OnProgressUpdated.Execute(1-static_cast<float>(NumOfThreads)/TotalThreads,Object);
-						
-							if(NumOfThreads==0)
-							{
-							const	float EndTime=ParentObject->GetWorld()->GetTimeSeconds();
-							const float TotalTime=EndTime-StartTime;
-								OnImportSceneComplete.Execute(AIScenes,TotalTime);
-								UE_LOG(LogAssimp,Log,TEXT("start %f end %f  total %f"),StartTime,EndTime,TotalTime);
-								
-							}
-						});
- 					}
- 				
- 					
-			});
-
- 				
- 			}
- 		
-
-
- 
- 	
- 	
- 	
-
- 	
- }
-
- void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
-	 TArray<UAIScene*>& Scenes,int Flags)
- {
-
-
-
-	
-
- 	for( FString FileName:InFilenames)
- 	{
- 		const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),Flags);
- 		
- 		
- 				
- 		if( !scene) {
- 			UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library "))
- 	
- 				}
- 			else
- 			{
- 				UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene);
- 				
- 			
- 				Scenes.Add(Object);
- 			
+		if (!scene)
+		{
+			UE_LOG(LogAssimp, Error, TEXT("Error importing scene in assimpfunction library "))
 		}
- 	}
- }
+		else
+		{
+			UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
 
- FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
- {
 
- 	//TODO Maybe We need to swap x and y  
- 	//convert aiMatrix to UE  Matrix then to transform
- 	FMatrix Matrix;
-    
-     FVector Ax1=FVector(NodeTransform.a1,NodeTransform.b1,NodeTransform.c1);
-     FVector Ax2=FVector(NodeTransform.a2,NodeTransform.b2,NodeTransform.c2);
-     FVector Ax3=FVector(NodeTransform.a3,NodeTransform.b3,NodeTransform.c3);
-     FVector Ax4=FVector(NodeTransform.a4,NodeTransform.b4,NodeTransform.c4);
-    Matrix.SetAxes(&Ax1,&Ax2,&Ax3,&Ax4);
- 	return FTransform(Matrix);
- }
+			Scenes.Add(Object);
+		}
+	}
+}
 
- FString UAssimpFunctionLibrary::GetBoneName(FAIBone Bone)
- {
- 	return UTF8_TO_TCHAR(	Bone.Bone->mName.C_Str());
- }
+FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
+{
+	aiVector3t<float> Scale, Position;
+	aiQuaterniont<float> Rotation;
+	NodeTransform.Decompose(Scale, Rotation, Position);
+	FRotator CorrectedRotation = FQuat(-Rotation.x, Rotation.z, Rotation.y, Rotation.w).Rotator();
+	CorrectedRotation.Yaw = -CorrectedRotation.Yaw;
+	const FVector CorrectedPosition = FVector(Position.x * 100, Position.z * 100, Position.y * 100);
 
- int UAssimpFunctionLibrary::GetNumOfWeights(FAIBone Bone)
- {
- 	return Bone.Bone->mNumWeights;
- }
 
- FTransform UAssimpFunctionLibrary::GetBoneTransform(FAIBone Bone)
- {
- 	return  UAssimpFunctionLibrary::aiMatToTransform(Bone.Bone->mOffsetMatrix);
- }
+	FTransform Transform(CorrectedRotation, CorrectedPosition, FVector(Scale.x, Scale.z, Scale.y));
 
- void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight>& Weights)
- {
- 	for (unsigned int  i = 0; i < Bone.Bone->mNumWeights; i++)
- 	{
 
- 	 FAIVertexWeight Weight=	FAIVertexWeight(Bone.Bone->mWeights[i]);
- 		Weights.Add(Weight);
- 	}
- }
+	if (Transform.GetScale3D().IsZero())
+	{
+		Transform.SetScale3D(FVector(1));
+	}
+	return Transform;
+}
 
+FString UAssimpFunctionLibrary::GetBoneName(FAIBone Bone)
+{
+	return UTF8_TO_TCHAR(Bone.Bone->mName.C_Str());
+}
+
+int UAssimpFunctionLibrary::GetNumOfWeights(FAIBone Bone)
+{
+	return Bone.Bone->mNumWeights;
+}
+
+FTransform UAssimpFunctionLibrary::GetBoneTransform(FAIBone Bone)
+{
+	return UAssimpFunctionLibrary::aiMatToTransform(Bone.Bone->mOffsetMatrix);
+}
+
+void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight>& Weights)
+{
+	for (unsigned int i = 0; i < Bone.Bone->mNumWeights; i++)
+	{
+		FAIVertexWeight Weight = FAIVertexWeight(Bone.Bone->mWeights[i]);
+		Weights.Add(Weight);
+	}
+}

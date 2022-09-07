@@ -7,6 +7,7 @@
 #include "AIBone.h"
 #include "AIScene.h"
 #include "assimp/mesh.h"
+#include "MeshDescription.h"
 #include "UObject/NoExportTypes.h"
 #include "ProceduralMeshComponent.h"
 #include "AIMesh.generated.h"
@@ -36,6 +37,9 @@ friend UAIScene;
 	//Get All data needed to create a mesh section in Unreal engine
 	UFUNCTION(BlueprintCallable)
 	void GetMeshDataForProceduralMesh(TArray<FVector>&Vertices,TArray<int32>& Triangles,TArray<FVector>& Normals, TArray<FVector2D>& UV0, TArray<FProcMeshTangent>& Tangents);
+	UFUNCTION(BlueprintCallable)
+	 UStaticMesh*  GetMeshDescription();
+	
 	//Num of vertices array
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	int GetNumVertices();
@@ -65,7 +69,14 @@ friend UAIScene;
 	 **/
 	
 	UFUNCTION(BlueprintCallable,BlueprintPure)
-	int GetMaterialIndex(); 
-	private:
+	int GetMaterialIndex();
+
+	//Get Owning Node
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	UAINode* GetParentNode();
+	UPROPERTY()
+	UStaticMeshDescription* MeshDescription;
 	aiMesh* Mesh;
+	UPROPERTY()
+	UAINode* ParentNode=nullptr;
 };

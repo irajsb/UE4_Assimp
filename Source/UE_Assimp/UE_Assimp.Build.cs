@@ -39,7 +39,7 @@ public class UE_Assimp : ModuleRules
 				"CoreUObject",
 				"Engine",
 				"Slate",
-				"SlateCore","ProceduralMeshComponent","Projects"
+				"SlateCore","ProceduralMeshComponent","Projects","MeshDescription", "MeshConversion","StaticMeshDescription"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);
