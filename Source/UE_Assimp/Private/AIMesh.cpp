@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AIMesh.h"
 
 #include "AIScene.h"
@@ -9,7 +8,7 @@
 #include "StaticMeshDescription.h"
 #include "UE_Assimp.h"
 
-void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
+void UAIMesh::GetMeshVertices(TArray<FVector> &Vertices)
 {
 	if (!this)
 	{
@@ -29,7 +28,7 @@ void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 	}
 }
 
-void UAIMesh::GetMeshNormals(TArray<FVector>& Normals)
+void UAIMesh::GetMeshNormals(TArray<FVector> &Normals)
 {
 	if (!this)
 	{
@@ -49,9 +48,9 @@ void UAIMesh::GetMeshNormals(TArray<FVector>& Normals)
 	}
 }
 
-void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int32>& Triangles,
-                                           TArray<FVector>& Normals, TArray<FVector2D>& UV0,
-                                           TArray<FProcMeshTangent>& Tangents)
+void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector> &Vertices, TArray<int32> &Triangles,
+										   TArray<FVector> &Normals, TArray<FVector2D> &UV0,
+										   TArray<FProcMeshTangent> &Tangents)
 {
 	if (!this)
 	{
@@ -83,7 +82,6 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	}
 	UV0.AddUninitialized(Mesh->mNumVertices);
 
-
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
 		Normals[Index] = ToVector(Mesh->mNormals[Index]);
@@ -101,7 +99,6 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 		}
 	}
 
-
 	for (unsigned int i = 0; i < Mesh->mNumFaces; i++)
 	{
 		const auto Face = Mesh->mFaces[i];
@@ -112,7 +109,7 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	}
 }
 
-UStaticMesh* UAIMesh::GetMeshDescription()
+UStaticMesh *UAIMesh::GetMeshDescription()
 {
 	MeshDescription = UStaticMesh::CreateStaticMeshDescription(this);
 
@@ -130,7 +127,7 @@ UStaticMesh* UAIMesh::GetMeshDescription()
 
 		auto Instance = MeshDescBuilder.AppendInstance(VertexID);
 		VertexInstances[Index] = Instance;
-		MeshDescBuilder.SetInstanceNormal(Instance,ToVector(Mesh->mNormals[Index]));
+		MeshDescBuilder.SetInstanceNormal(Instance, ToVector(Mesh->mNormals[Index]));
 		if (Mesh->HasTextureCoords(0))
 		{
 			MeshDescBuilder.SetInstanceUV(
@@ -139,7 +136,6 @@ UStaticMesh* UAIMesh::GetMeshDescription()
 	}
 
 	const FPolygonGroupID PolygonGroup = MeshDescBuilder.AppendPolygonGroup();
-
 
 	for (unsigned int i = 0; i < Mesh->mNumFaces; i++)
 	{
@@ -150,32 +146,29 @@ UStaticMesh* UAIMesh::GetMeshDescription()
 		}
 
 		MeshDescBuilder.AppendTriangle(VertexInstances[Face.mIndices[0]], VertexInstances[Face.mIndices[1]],
-		                               VertexInstances[Face.mIndices[2]], PolygonGroup);
+									   VertexInstances[Face.mIndices[2]], PolygonGroup);
 	}
 	// At least one material must be added
-	UStaticMesh* StaticMesh = NewObject<UStaticMesh>(this);
+	UStaticMesh *StaticMesh = NewObject<UStaticMesh>(this);
 	StaticMesh->GetStaticMaterials().Add(FStaticMaterial());
 
 	UStaticMesh::FBuildMeshDescriptionsParams MeshDescriptionsParams;
 	MeshDescriptionsParams.bBuildSimpleCollision = true;
 
-
 	// Build static mesh
-	TArray<const FMeshDescription*> MeshDescriptions;
+	TArray<const FMeshDescription *> MeshDescriptions;
 	MeshDescriptions.Emplace(&MeshDescription->GetMeshDescription());
 	StaticMesh->BuildFromMeshDescriptions(MeshDescriptions, MeshDescriptionsParams);
 
-
 	return StaticMesh;
 }
-
 
 int UAIMesh::GetNumVertices()
 {
 	return Mesh->mNumVertices;
 }
 
-void UAIMesh::GetAllBones(TArray<FAIBone>& Bones)
+void UAIMesh::GetAllBones(TArray<FAIBone> &Bones)
 {
 	for (unsigned int i = 0; i < Mesh->mNumBones; i++)
 	{
@@ -193,7 +186,7 @@ int UAIMesh::GetMaterialIndex()
 	return Mesh->mMaterialIndex;
 }
 
-UAINode* UAIMesh::GetParentNode()
+UAINode *UAIMesh::GetParentNode()
 {
 	return ParentNode;
 }

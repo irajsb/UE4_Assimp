@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AssimpFunctionLibrary.h"
 
 #include "AIBone.h"
@@ -9,7 +8,6 @@
 #include "assimp/cimport.h"
 #include "assimp/DefaultLogger.hpp"
 #include "assimp/scene.h"
-
 
 #if PLATFORM_WINDOWS
 #include <Runtime\Core\Public\HAL\FileManager.h>
@@ -20,25 +18,23 @@
 #define MAX_FILETYPES_STR 4096
 #define MAX_FILENAME_STR 65536
 
-
 void UAssimpFunctionLibrary::OpenFileDialogue(FString DialogTitle, FString DefaultPath, FString DefaultFile,
-                                              const FString& FileTypes, uint8 Flags, TArray<FString>& OutFilenames,
-                                              bool MultiSelect, bool& Success)
+											  const FString &FileTypes, uint8 Flags, TArray<FString> &OutFilenames,
+											  bool MultiSelect, bool &Success)
 {
-	const void* ParentWindowHandle = nullptr;
+	const void *ParentWindowHandle = nullptr;
 	int OutFilterIndex;
 	Success = FileDialogShared(false, ParentWindowHandle, DialogTitle, DefaultPath, DefaultFile, FileTypes, Flags,
-	                           OutFilenames, OutFilterIndex);
+							   OutFilenames, OutFilterIndex);
 }
 
-
-bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWindowHandle, const FString& DialogTitle,
-                                              const FString& DefaultPath, const FString& DefaultFile,
-                                              const FString& FileTypes, uint32 Flags, TArray<FString>& OutFilenames,
-                                              int32& OutFilterIndex)
+bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void *ParentWindowHandle, const FString &DialogTitle,
+											  const FString &DefaultPath, const FString &DefaultFile,
+											  const FString &FileTypes, uint32 Flags, TArray<FString> &OutFilenames,
+											  int32 &OutFilterIndex)
 {
 #pragma region Windows
-	//FScopedSystemModalMode SystemModalScope;
+	// FScopedSystemModalMode SystemModalScope;
 #if PLATFORM_WINDOWS
 	WCHAR Filename[MAX_FILENAME_STR];
 	FCString::Strcpy(Filename, MAX_FILENAME_STR, *(DefaultFile.Replace(TEXT("/"), TEXT("\\"))));
@@ -46,11 +42,11 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	// Convert the forward slashes in the path name to backslashes, otherwise it'll be ignored as invalid and use whatever is cached in the registry
 	WCHAR Pathname[MAX_FILENAME_STR];
 	FCString::Strcpy(Pathname, MAX_FILENAME_STR,
-	                 *(FPaths::ConvertRelativePathToFull(DefaultPath).Replace(TEXT("/"), TEXT("\\"))));
+					 *(FPaths::ConvertRelativePathToFull(DefaultPath).Replace(TEXT("/"), TEXT("\\"))));
 
 	// Convert the "|" delimited list of filetypes to NULL delimited then add a second NULL character to indicate the end of the list
 	WCHAR FileTypeStr[MAX_FILETYPES_STR];
-	const WCHAR* FileTypesPtr = nullptr;
+	const WCHAR *FileTypesPtr = nullptr;
 	const int32 FileTypesLen = FileTypes.Len();
 
 	// Nicely formatted file types for lookup later and suitable to append to filenames without extensions
@@ -63,7 +59,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	FileTypes.ParseIntoArray(UnformattedExtensions, TEXT("|"), true);
 	for (int32 ExtensionIndex = 1; ExtensionIndex < UnformattedExtensions.Num(); ExtensionIndex += 2)
 	{
-		const FString& Extension = UnformattedExtensions[ExtensionIndex];
+		const FString &Extension = UnformattedExtensions[ExtensionIndex];
 		// Assume the user typed in an extension or doesnt want one when using the *.* extension. We can't determine what extension they wan't in that case
 		if (Extension != TEXT("*.*"))
 		{
@@ -78,7 +74,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 		FileTypesPtr = FileTypeStr;
 		FCString::Strcpy(FileTypeStr, MAX_FILETYPES_STR, *FileTypes);
 
-		TCHAR* Pos = FileTypeStr;
+		TCHAR *Pos = FileTypeStr;
 		while (Pos[0] != 0)
 		{
 			if (Pos[0] == '|')
@@ -139,7 +135,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	if (bSuccess)
 	{
 		// GetOpenFileName/GetSaveFileName changes the CWD on success. Change it back immediately.
-		//FPlatformProcess::SetCurrentWorkingDirectoryToBaseDir();
+		// FPlatformProcess::SetCurrentWorkingDirectoryToBaseDir();
 
 		if (Flags & 0x01)
 		{
@@ -147,7 +143,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 			// where the first element is the directory and all remaining elements are filenames.
 			// There is an extra NULL character to indicate the end of the list.
 			FString DirectoryOrSingleFileName = FString(Filename);
-			TCHAR* Pos = Filename + DirectoryOrSingleFileName.Len() + 1;
+			TCHAR *Pos = Filename + DirectoryOrSingleFileName.Len() + 1;
 
 			if (Pos[0] == 0)
 			{
@@ -161,15 +157,14 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 				do
 				{
 					SelectedFile = FString(Pos);
-					new(OutFilenames) FString(DirectoryOrSingleFileName / SelectedFile);
+					new (OutFilenames) FString(DirectoryOrSingleFileName / SelectedFile);
 					Pos += SelectedFile.Len() + 1;
-				}
-				while (Pos[0] != 0);
+				} while (Pos[0] != 0);
 			}
 		}
 		else
 		{
-			new(OutFilenames) FString(Filename);
+			new (OutFilenames) FString(Filename);
 		}
 
 		// The index of the filter in OPENFILENAME starts at 1.
@@ -177,13 +172,13 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 
 		// Get the extension to add to the filename (if one doesnt already exist)
 		FString Extension = CleanExtensionList.IsValidIndex(OutFilterIndex)
-			                    ? CleanExtensionList[OutFilterIndex]
-			                    : TEXT("");
+								? CleanExtensionList[OutFilterIndex]
+								: TEXT("");
 
 		// Make sure all filenames gathered have their paths normalized and proper extensions added
 		for (auto OutFilenameIt = OutFilenames.CreateIterator(); OutFilenameIt; ++OutFilenameIt)
 		{
-			FString& OutFilename = *OutFilenameIt;
+			FString &OutFilename = *OutFilenameIt;
 
 			OutFilename = IFileManager::Get().ConvertToRelativePath(*OutFilename);
 
@@ -201,7 +196,7 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 		uint32 Error = ::CommDlgExtendedError();
 		if (Error != ERROR_SUCCESS)
 		{
-			//UE_LOG(LogDesktopPlatform, Warning, TEXT("Error reading results of file dialog. Error: 0x%04X"), Error);
+			// UE_LOG(LogDesktopPlatform, Warning, TEXT("Error reading results of file dialog. Error: 0x%04X"), Error);
 		}
 	}
 
@@ -217,16 +212,14 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	return false;
 }
 
-
-void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
-                                          TArray<UAIScene*>& Scenes, int Flags)
+void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject *ParentObject,
+										  TArray<UAIScene *> &Scenes, int Flags)
 {
 	Assimp::DefaultLogger::set(new UEAssimpStream());
 
 	for (FString FileName : InFilenames)
 	{
-		const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), Flags);
-
+		const struct aiScene *scene = aiImportFile(TCHAR_TO_UTF8(*FileName), Flags);
 
 		if (!scene)
 		{
@@ -234,8 +227,7 @@ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* 
 		}
 		else
 		{
-			UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
-
+			UAIScene *Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
 
 			Scenes.Add(Object);
 		}
@@ -251,9 +243,7 @@ FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
 	CorrectedRotation.Yaw = -CorrectedRotation.Yaw;
 	const FVector CorrectedPosition = FVector(Position.x * 100, Position.z * 100, Position.y * 100);
 
-
 	FTransform Transform(CorrectedRotation, CorrectedPosition, FVector(Scale.x, Scale.z, Scale.y));
-
 
 	if (Transform.GetScale3D().IsZero())
 	{
@@ -277,7 +267,7 @@ FTransform UAssimpFunctionLibrary::GetBoneTransform(FAIBone Bone)
 	return UAssimpFunctionLibrary::aiMatToTransform(Bone.Bone->mOffsetMatrix);
 }
 
-void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight>& Weights)
+void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight> &Weights)
 {
 	for (unsigned int i = 0; i < Bone.Bone->mNumWeights; i++)
 	{

@@ -3,8 +3,8 @@
 #include "UE_Assimp.h"
 #include "Core.h"
 #include "Modules/ModuleManager.h"
-#include "assimp/Importer.hpp"     // C++ importer interface
-#include "assimp/scene.h"          // Output data structure
+#include "assimp/Importer.hpp"	// C++ importer interface
+#include "assimp/scene.h"		// Output data structure
 #include "assimp/postprocess.h" // Post processing flags
 
 #include "Interfaces/IPluginManager.h"
@@ -13,8 +13,6 @@
 DEFINE_LOG_CATEGORY(LogAssimp);
 void FUE_AssimpModule::StartupModule()
 {
-
-
 }
 
 void FUE_AssimpModule::ShutdownModule()
@@ -23,9 +21,8 @@ void FUE_AssimpModule::ShutdownModule()
 	// we call this function before unloading the module.
 
 	// Free the dll handle
-
 }
 
 #undef LOCTEXT_NAMESPACE
-	
+
 IMPLEMENT_MODULE(FUE_AssimpModule, UE_Assimp)

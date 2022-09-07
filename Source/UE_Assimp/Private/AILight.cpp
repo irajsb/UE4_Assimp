@@ -1,21 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "AILight.h"
 
 #include "UE_Assimp.h"
 
-
-
 FString UAILight::GetLightName()
 {
-	return  UTF8_TO_TCHAR(	Light->mName.C_Str());
+	return UTF8_TO_TCHAR(Light->mName.C_Str());
 }
 
 TEnumAsByte<EAssimpLightType> UAILight::GetLightType()
 {
-	return static_cast<TEnumAsByte<EAssimpLightType>>( static_cast<uint8>( Light->mType));
-	
+	return static_cast<TEnumAsByte<EAssimpLightType>>(static_cast<uint8>(Light->mType));
 }
 
 FVector UAILight::GetLightPosition()
@@ -25,12 +21,12 @@ FVector UAILight::GetLightPosition()
 
 FVector UAILight::GetLightDirection()
 {
-	return  ToVector(Light->mDirection);
+	return ToVector(Light->mDirection);
 }
 
 FVector UAILight::GetUpDirection()
 {
-	return  ToVector(Light->mUp);
+	return ToVector(Light->mUp);
 }
 
 float UAILight::GetAttenuationConstant()
@@ -40,7 +36,7 @@ float UAILight::GetAttenuationConstant()
 
 float UAILight::GetAttenuationLinear()
 {
-	return  Light->mAttenuationLinear;
+	return Light->mAttenuationLinear;
 }
 
 float UAILight::GetAttenuationQuadratic()
@@ -50,17 +46,17 @@ float UAILight::GetAttenuationQuadratic()
 
 FLinearColor UAILight::GetColorDiffuse()
 {
-	return  FLinearColor(Light->mColorDiffuse.r,Light->mColorDiffuse.g,Light->mColorDiffuse.b,1);
+	return FLinearColor(Light->mColorDiffuse.r, Light->mColorDiffuse.g, Light->mColorDiffuse.b, 1);
 }
 
 FLinearColor UAILight::GetColorSpecular()
 {
-	return  FLinearColor(Light->mColorSpecular.r,Light->mColorSpecular.g,Light->mColorSpecular.b,1);
+	return FLinearColor(Light->mColorSpecular.r, Light->mColorSpecular.g, Light->mColorSpecular.b, 1);
 }
 
 FLinearColor UAILight::GetColorAmbient()
 {
-	return  FLinearColor(Light->mColorAmbient.r,Light->mColorAmbient.g,Light->mColorAmbient.b,1); 
+	return FLinearColor(Light->mColorAmbient.r, Light->mColorAmbient.g, Light->mColorAmbient.b, 1);
 }
 
 float UAILight::GetConeInnerAngle()
@@ -75,5 +71,5 @@ float UAILight::GetConeOuterAngle()
 
 FVector2D UAILight::GetAreaLightSize()
 {
-	return FVector2D( Light->mSize.x*100.f,Light->mSize.y*100.f);
+	return FVector2D(Light->mSize.x * 100.f, Light->mSize.y * 100.f);
 }

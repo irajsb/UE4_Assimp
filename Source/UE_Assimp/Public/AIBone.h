@@ -4,48 +4,47 @@
 
 #include "CoreMinimal.h"
 
-
-
 #include "UObject/NoExportTypes.h"
 #include "AIBone.generated.h"
 
 /**
- * 
+ *
  */
-
-
 
 struct aiBone;
 struct aiVertexWeight;
+
 USTRUCT(BlueprintType)
-struct  FAIBone 
+struct FAIBone
 {
-friend class UAssimpFunctionLibrary;
-GENERATED_BODY()
-FAIBone();	
-FAIBone(aiBone* Bone);
+    friend class UAssimpFunctionLibrary;
+
+    GENERATED_BODY()
+
+    FAIBone();
+
+    FAIBone(aiBone *Bone);
 
 private:
-	aiBone* Bone=nullptr;
+    aiBone *Bone = nullptr;
 };
 
 USTRUCT(BlueprintType)
 struct FAIVertexWeight
 {
-	friend class UAssimpFunctionLibrary;
+    friend class UAssimpFunctionLibrary;
 
 public:
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-  FAIVertexWeight();
-	
- FAIVertexWeight(aiVertexWeight InVertexWeight);
+    FAIVertexWeight();
 
-	UPROPERTY(BlueprintReadOnly)
-	int VertexID;
-	UPROPERTY(BlueprintReadOnly)
-	float Weight;
+    FAIVertexWeight(aiVertexWeight InVertexWeight);
+
+    UPROPERTY(BlueprintReadOnly, Category = "Assimp")
+    int VertexID;
+    UPROPERTY(BlueprintReadOnly, Category = "Assimp")
+    float Weight;
 
 private:
-	
 };
