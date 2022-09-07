@@ -4,8 +4,8 @@
 
 #include "CoreMinimal.h"
 
-#include "ProceduralMeshComponent.h"
 #include "AssimpMesh.generated.h"
+#include "ProceduralMeshComponent.h"
 
 /**
  *
@@ -14,13 +14,13 @@ class UAIMesh;
 UCLASS()
 class UE_ASSIMP_API UAssimpMesh : public UProceduralMeshComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-public:
-	UFUNCTION(BlueprintCallable, Category = "Assimp")
-	void SetupMesh(UAIMesh *InMeshData);
+  public:
+    UFUNCTION(BlueprintCallable, Category = "Assimp|Mesh")
+    void SetupMesh(UAIMesh *InMeshData);
 
-private:
-	UPROPERTY()
-	UAIMesh *MeshData;
+  private:
+    UPROPERTY()
+    UAIMesh *MeshData;
 };

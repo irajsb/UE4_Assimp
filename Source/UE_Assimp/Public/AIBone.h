@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 
-#include "UObject/NoExportTypes.h"
 #include "AIBone.generated.h"
+#include "UObject/NoExportTypes.h"
+
 
 /**
  *
@@ -25,7 +26,7 @@ struct FAIBone
 
     FAIBone(aiBone *Bone);
 
-private:
+  private:
     aiBone *Bone = nullptr;
 };
 
@@ -34,17 +35,17 @@ struct FAIVertexWeight
 {
     friend class UAssimpFunctionLibrary;
 
-public:
+  public:
     GENERATED_BODY()
 
     FAIVertexWeight();
 
     FAIVertexWeight(aiVertexWeight InVertexWeight);
 
-    UPROPERTY(BlueprintReadOnly, Category = "Assimp")
+    UPROPERTY(BlueprintReadOnly, Category = "Assimp|Bone")
     int VertexID;
-    UPROPERTY(BlueprintReadOnly, Category = "Assimp")
+    UPROPERTY(BlueprintReadOnly, Category = "Assimp|Bone")
     float Weight;
 
-private:
+  private:
 };

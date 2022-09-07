@@ -10,8 +10,8 @@ DECLARE_LOG_CATEGORY_EXTERN(LogAssimp, Log, All);
 UENUM(BlueprintType)
 enum ETaskResult
 {
-	Success,
-	Fail
+    Success,
+    Fail
 };
 
 // ----------------------------------------------------------------------------------
@@ -21,27 +21,27 @@ enum ETaskResult
 UENUM(Blueprintable, BlueprintType)
 enum EAssimpReturn
 {
-	/** Indicates that a function was successful */
-	ReturnSuccess = 0x0,
+    /** Indicates that a function was successful */
+    ReturnSuccess = 0x0,
 
-	/** Indicates that a function failed */
-	ReturnFail = -0x1,
+    /** Indicates that a function failed */
+    ReturnFail = -0x1,
 
-	/** Indicates that not enough memory was available
-	 * to perform the requested operation
-	 */
-	ReturnOutOfMemory = -0x3,
+    /** Indicates that not enough memory was available
+     * to perform the requested operation
+     */
+    ReturnOutOfMemory = -0x3,
 
-	/// @endcond
+    /// @endcond
 };
 
 class FUE_AssimpModule : public IModuleInterface
 {
-public:
-	/** IModuleInterface implementation */
-	virtual void StartupModule() override;
-	virtual void ShutdownModule() override;
+  public:
+    /** IModuleInterface implementation */
+    virtual void StartupModule() override;
+    virtual void ShutdownModule() override;
 
-private:
-	/** Handle to the test dll we will load */
+  private:
+    /** Handle to the test dll we will load */
 };

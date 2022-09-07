@@ -4,11 +4,11 @@
 
 #include "CoreMinimal.h"
 
+#include "AIMaterial.generated.h"
 #include "AIScene.h"
 #include "UE_Assimp.h"
-#include "assimp/material.h"
 #include "UObject/NoExportTypes.h"
-#include "AIMaterial.generated.h"
+#include "assimp/material.h"
 
 /**
  *
@@ -394,7 +394,7 @@ class UE_ASSIMP_API UAIMaterial : public UObject
 
     friend UAIScene;
 
-public:
+  public:
     static UAIMaterial *InternalCreateNewObject(UObject *Parent, aiMaterial *InMaterial);
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|Material")
@@ -447,12 +447,8 @@ public:
      *  @return AI_SUCCESS on success, otherwise something else. Have fun.*/
     // ---------------------------------------------------------------------------
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|Material")
-    EAssimpReturn GetMaterialTexture(
-        EAiTextureType Type,
-        uint8 Index,
-        FString &Path,
-        EAiTextureMapping Mapping);
+    EAssimpReturn GetMaterialTexture(EAiTextureType Type, uint8 Index, FString &Path, EAiTextureMapping Mapping);
 
-private:
+  private:
     aiMaterial *Material;
 };

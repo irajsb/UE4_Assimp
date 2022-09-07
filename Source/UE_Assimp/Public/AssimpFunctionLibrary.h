@@ -6,9 +6,9 @@
 
 #include "AIBone.h"
 #include "AIScene.h"
+#include "AssimpFunctionLibrary.generated.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "assimp/postprocess.h"
-#include "AssimpFunctionLibrary.generated.h"
 
 /**
  *
@@ -17,31 +17,38 @@
 // Check if this is necesarry for UE5
 
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnProgressUpdated, float, NormalPercentage, UAIScene *, ImportedScene);
-DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete, const TArray<UAIScene *> &, ImportedScenes, float, TotalTimeElapsed);
+DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnImportSceneComplete, const TArray<UAIScene *> &, ImportedScenes, float,
+                                   TotalTimeElapsed);
 
 UCLASS()
 class UE_ASSIMP_API UAssimpFunctionLibrary : public UBlueprintFunctionLibrary
 {
     GENERATED_BODY()
-public:
+  public:
     /**
 Opens the "open file" dialog for the platform
  DialogTitle				The text for the title of the dialog window
 DefaultPath				The path where the file dialog will open initially
  DefaultFile				The file that the dialog will select initially
  Flags						Details about the dialog. See EFileDialogFlags.
-FileTypes					The type filters to show in the dialog. This string should be a "|" delimited list of (Description|Extensionlist) pairs. Extensionlists are ";" delimited.
- OutFilenames				The filenames that were selected in the dialog
- Success  true if files were successfully selected	*/
+FileTypes					The type filters to show in the dialog. This string should be a "|" delimited list of
+(Description|Extensionlist) pairs. Extensionlists are ";" delimited. OutFilenames				The filenames that were
+selected in the dialog Success  true if files were successfully selected	*/
     UFUNCTION(BlueprintCallable, Category = "Assimp")
-    static void OpenFileDialogue(FString DialogTitle, FString DefaultPath, FString DefaultFile, const FString &FileTypes, uint8 Flags, TArray<FString> &OutFilenames, bool MultiSelect, bool &Success);
+    static void OpenFileDialogue(FString DialogTitle, FString DefaultPath, FString DefaultFile,
+                                 const FString &FileTypes, uint8 Flags, TArray<FString> &OutFilenames, bool MultiSelect,
+                                 bool &Success);
 
     // from Engine\Source\Developer\DesktopPlatform\Private\Windows
-    static bool FileDialogShared(bool bSave, const void *ParentWindowHandle, const FString &DialogTitle, const FString &DefaultPath, const FString &DefaultFile, const FString &FileTypes, uint32 Flags, TArray<FString> &OutFilenames, int32 &OutFilterIndex);
+    static bool FileDialogShared(bool bSave, const void *ParentWindowHandle, const FString &DialogTitle,
+                                 const FString &DefaultPath, const FString &DefaultFile, const FString &FileTypes,
+                                 uint32 Flags, TArray<FString> &OutFilenames, int32 &OutFilterIndex);
     // Experimental
     UFUNCTION(BlueprintCallable, Category = "Assimp")
-    static void ImportScenesAsync(TArray<FString> InFilenames, UObject *ParentObject, int Flags, FOnProgressUpdated OnProgressUpdated, FOnImportSceneComplete OnImportSceneComplete);
-    // Flags: You can use post process nodes and use | (bitwise Or) between them to create any combination of flags. Also We recommend using preset flags. Flip UV flag is needed for correct urneal engine meshes
+    static void ImportScenesAsync(TArray<FString> InFilenames, UObject *ParentObject, int Flags,
+                                  FOnProgressUpdated OnProgressUpdated, FOnImportSceneComplete OnImportSceneComplete);
+    // Flags: You can use post process nodes and use | (bitwise Or) between them to create any combination of flags.
+    // Also We recommend using preset flags. Flip UV flag is needed for correct urneal engine meshes
     UFUNCTION(BlueprintCallable, Category = "Assimp")
     static void ImportScenes(TArray<FString> InFilenames, UObject *ParentObject, TArray<UAIScene *> &Scenes, int Flags);
     static FTransform aiMatToTransform(aiMatrix4x4 NodeTransform);
@@ -138,7 +145,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      */
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_MakeLeftHanded() { return 0x4; }
+    static int PostProcess_MakeLeftHanded()
+    {
+        return 0x4;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Triangulates all faces of all meshes.
@@ -227,7 +237,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * appearance.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_GenSmoothNormals() { return 0x40; }
+    static int PostProcess_GenSmoothNormals()
+    {
+        return 0x40;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Splits large meshes into smaller sub-meshes.
@@ -276,7 +289,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * range.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_PreTransformVertices() { return 0x100; }
+    static int PostProcess_PreTransformVertices()
+    {
+        return 0x100;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Limits the number of bones simultaneously affecting a single vertex
@@ -293,7 +309,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * step might be of interest to you.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_LimitBoneWeights() { return 0x200; }
+    static int PostProcess_LimitBoneWeights()
+    {
+        return 0x200;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Validates the imported scene data structure.
@@ -322,7 +341,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * compulsory, but recommended.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_ValidateDataStructure() { return 0x400; }
+    static int PostProcess_ValidateDataStructure()
+    {
+        return 0x400;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Reorders triangles for better vertex cache locality.
@@ -338,7 +360,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * importer property can be used to fine-tune the cache optimization.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_ImproveCacheLocality() { return 0x800; }
+    static int PostProcess_ImproveCacheLocality()
+    {
+        return 0x800;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Searches for redundant/unreferenced materials and removes them.
@@ -360,7 +385,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * <tt>#AI_CONFIG_PP_RRM_EXCLUDE_LIST</tt> importer property.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_RemoveRedundantMaterials() { return 0x1000; }
+    static int PostProcess_RemoveRedundantMaterials()
+    {
+        return 0x1000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step tries to determine which meshes have normal vectors
@@ -375,7 +403,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * to enable this step, although the result is not always correct.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FixInfacingNormals() { return 0x2000; }
+    static int PostProcess_FixInfacingNormals()
+    {
+        return 0x2000;
+    }
 
     // -------------------------------------------------------------------------
     /**
@@ -387,7 +418,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * hard work for you :)
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_PopulateArmatureData() { return 0x4000; }
+    static int PostProcess_PopulateArmatureData()
+    {
+        return 0x4000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step splits meshes with more than one primitive type in
@@ -402,7 +436,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  exclude lines and points, which are rarely used, from the import.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_SortByPType() { return 0x8000; }
+    static int PostProcess_SortByPType()
+    {
+        return 0x8000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step searches all meshes for degenerate primitives and
@@ -446,7 +483,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * format specification and write them as degenerate triangles instead.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FindDegenerates() { return 0x10000; }
+    static int PostProcess_FindDegenerates()
+    {
+        return 0x10000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step searches all meshes for invalid data, such as zeroed
@@ -462,7 +502,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * the accuracy of the check for duplicate animation tracks.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FindInvalidData() { return 0x20000; }
+    static int PostProcess_FindInvalidData()
+    {
+        return 0x20000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step converts non-UV mappings (such as spherical or
@@ -480,7 +523,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * properly.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_GenUVCoords() { return 0x40000; }
+    static int PostProcess_GenUVCoords()
+    {
+        return 0x40000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step applies per-texture UV transformations and bakes
@@ -498,7 +544,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * (homogeneous) transformation matrix.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_TransformUVCoords() { return 0x80000; }
+    static int PostProcess_TransformUVCoords()
+    {
+        return 0x80000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step searches for duplicate meshes and replaces them
@@ -514,7 +563,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  planned for future versions.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FindInstances() { return 0x100000; }
+    static int PostProcess_FindInstances()
+    {
+        return 0x100000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>A post-processing step to reduce the number of meshes.
@@ -526,7 +578,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  compatible with both #AiPostProcess_SplitLargeMeshes and #AiPostProcess_SortByPType.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_OptimizeMeshes() { return 0x200000; }
+    static int PostProcess_OptimizeMeshes()
+    {
+        return 0x200000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>A post-processing step to optimize the scene hierarchy.
@@ -555,7 +610,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  usually fixes them all and makes them renderable.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_OptimizeGraph() { return 0x400000; }
+    static int PostProcess_OptimizeGraph()
+    {
+        return 0x400000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step flips all UV coordinates along the y-axis and adjusts
@@ -576,7 +634,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * applications.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FlipUVs() { return 0x800000; }
+    static int PostProcess_FlipUVs()
+    {
+        return 0x800000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step adjusts the output face winding order to be CW.
@@ -592,14 +653,20 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * @endcode
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_FlipWindingOrder() { return 0x1000000; }
+    static int PostProcess_FlipWindingOrder()
+    {
+        return 0x1000000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step splits meshes with many bones into sub-meshes so that each
      * sub-mesh has fewer or as many bones as a given limit.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_SplitByBoneCount() { return 0x2000000; }
+    static int PostProcess_SplitByBoneCount()
+    {
+        return 0x2000000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step removes bones losslessly or according to some threshold.
@@ -615,7 +682,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  only if all bones within the scene qualify for removal.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_Debone() { return 0x4000000; }
+    static int PostProcess_Debone()
+    {
+        return 0x4000000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>This step will perform a global scale of the model.
@@ -628,7 +698,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  Use <tt>#AI_CONFIG_GLOBAL_SCALE_FACTOR_KEY</tt> to setup the global scaling factor.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_GlobalScale() { return 0x8000000; }
+    static int PostProcess_GlobalScale()
+    {
+        return 0x8000000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>A postprocessing step to embed of textures.
@@ -640,14 +713,20 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      *  of the imported model. And if so, it uses that.
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_EmbedTextures() { return 0x10000000; }
+    static int PostProcess_EmbedTextures()
+    {
+        return 0x10000000;
+    }
 
     // AiPostProcess_GenEntityMeshes = 0x100000,
     // AiPostProcess_OptimizeAnimations = 0x200000
     // AiPostProcess_FixTexturePaths = 0x200000
 
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_ForceGenNormals() { return 0x20000000; }
+    static int PostProcess_ForceGenNormals()
+    {
+        return 0x20000000;
+    }
 
     // -------------------------------------------------------------------------
     /** <hr>Drops normals for all faces of all meshes.
@@ -660,13 +739,19 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
      * This process gives sense back to AiPostProcess_JoinIdenticalVertices
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_DropNormals() { return 0x40000000; }
+    static int PostProcess_DropNormals()
+    {
+        return 0x40000000;
+    }
 
     // -------------------------------------------------------------------------
     /**
      */
     UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Assimp|PostProcess")
-    static int PostProcess_GenBoundingBoxes() { return 0x80000000; }
+    static int PostProcess_GenBoundingBoxes()
+    {
+        return 0x80000000;
+    }
 
     /** @def aiProcess_ConvertToLeftHanded
      *  @brief Shortcut flag for Direct3D-based applications.
