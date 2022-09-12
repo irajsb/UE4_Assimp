@@ -2,6 +2,7 @@
 # Assimp Mesh Importer  5.4.2 for  Unreal engine 
 Features:
 - Static Mesh and Procedural Mesh support  
+- Mesh instancing for Static Meshes
 - Async Loading
 - Users can use multpile approaches for maximum flexiblity
 - Garbage collection using unreal GC and integration with UObjects 
