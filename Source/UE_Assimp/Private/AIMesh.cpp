@@ -112,8 +112,11 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	}
 }
 
-UStaticMesh* UAIMesh::GetMeshDescription()
+UStaticMesh* UAIMesh::GetStaticMesh()
 {
+	if (StaticMesh) {
+		return StaticMesh;
+	}
 	MeshDescription = UStaticMesh::CreateStaticMeshDescription(this);
 
 	FMeshDescriptionBuilder MeshDescBuilder;
@@ -153,7 +156,7 @@ UStaticMesh* UAIMesh::GetMeshDescription()
 		                               VertexInstances[Face.mIndices[2]], PolygonGroup);
 	}
 	// At least one material must be added
-	UStaticMesh* StaticMesh = NewObject<UStaticMesh>(this);
+	 StaticMesh = NewObject<UStaticMesh>(this);
 	StaticMesh->GetStaticMaterials().Add(FStaticMaterial());
 
 	UStaticMesh::FBuildMeshDescriptionsParams MeshDescriptionsParams;
@@ -193,7 +196,3 @@ int UAIMesh::GetMaterialIndex()
 	return Mesh->mMaterialIndex;
 }
 
-UAINode* UAIMesh::GetParentNode()
-{
-	return ParentNode;
-}

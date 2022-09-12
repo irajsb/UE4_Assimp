@@ -38,7 +38,7 @@ friend UAIScene;
 	UFUNCTION(BlueprintCallable)
 	void GetMeshDataForProceduralMesh(TArray<FVector>&Vertices,TArray<int32>& Triangles,TArray<FVector>& Normals, TArray<FVector2D>& UV0, TArray<FProcMeshTangent>& Tangents);
 	UFUNCTION(BlueprintCallable)
-	 UStaticMesh*  GetMeshDescription();
+	 UStaticMesh* GetStaticMesh();
 	
 	//Num of vertices array
 	UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -71,12 +71,11 @@ friend UAIScene;
 	UFUNCTION(BlueprintCallable,BlueprintPure)
 	int GetMaterialIndex();
 
-	//Get Owning Node
-	UFUNCTION(BlueprintCallable,BlueprintPure)
-	UAINode* GetParentNode();
+	
 	UPROPERTY()
 	UStaticMeshDescription* MeshDescription;
-	aiMesh* Mesh;
 	UPROPERTY()
-	UAINode* ParentNode=nullptr;
+	UStaticMesh* StaticMesh = nullptr;
+	aiMesh* Mesh;
+
 };

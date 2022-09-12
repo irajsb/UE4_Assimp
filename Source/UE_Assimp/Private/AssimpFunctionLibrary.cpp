@@ -285,3 +285,14 @@ void UAssimpFunctionLibrary::GetBoneWeights(FAIBone Bone, TArray<FAIVertexWeight
 		Weights.Add(Weight);
 	}
 }
+
+void UAssimpFunctionLibrary::SetActorNameDebug(AActor* InActor, FString ActorName)
+{
+
+
+	//we intend to use this only for debugging inside editor
+#if WITH_EDITOR  
+	InActor->Rename(*ActorName);
+	InActor->SetActorLabel(*ActorName);
+#endif //  
+}

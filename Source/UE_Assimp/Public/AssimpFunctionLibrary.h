@@ -762,4 +762,7 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
 	{
 		return aiProcessPreset_TargetRealtime_MaxQuality;
 	}
+
+	UFUNCTION(BlueprintCallable)
+		static void SetActorNameDebug(AActor* InActor, FString ActorName);
 };
