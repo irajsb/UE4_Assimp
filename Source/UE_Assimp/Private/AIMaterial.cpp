@@ -17,7 +17,7 @@ void UAIMaterial::GetMaterialBaseColor(FLinearColor& BaseColor) const
 	aiColor3D color;
 	if (AI_SUCCESS == Material->Get(AI_MATKEY_COLOR_DIFFUSE, color))
 	{
-		BaseColor = FColor((color.r), (color.g), (color.b), 1.0f);
+		BaseColor = FColor((color.r*100.f), (color.g*100.f), (color.b*100.f), 1.0f);
 	}
 }
 
