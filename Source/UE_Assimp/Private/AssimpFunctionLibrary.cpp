@@ -235,8 +235,7 @@ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* 
 		else
 		{
 			UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
-
-
+			Object->FullFilePath=FileName;
 			Scenes.Add(Object);
 		}
 	}

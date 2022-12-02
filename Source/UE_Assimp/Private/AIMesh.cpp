@@ -147,13 +147,11 @@ UStaticMesh* UAIMesh::GetStaticMesh()
 	for (unsigned int i = 0; i < Mesh->mNumFaces; i++)
 	{
 		const auto Face = Mesh->mFaces[i];
-		for (unsigned Index = 0; Index < Face.mNumIndices; Index++)
+		if(Face.mNumIndices>2)
 		{
-			Face.mIndices[Index];
+			MeshDescBuilder.AppendTriangle(VertexInstances[Face.mIndices[0]], VertexInstances[Face.mIndices[1]],
+										   VertexInstances[Face.mIndices[2]], PolygonGroup);
 		}
-
-		MeshDescBuilder.AppendTriangle(VertexInstances[Face.mIndices[0]], VertexInstances[Face.mIndices[1]],
-		                               VertexInstances[Face.mIndices[2]], PolygonGroup);
 	}
 	// At least one material must be added
 	 StaticMesh = NewObject<UStaticMesh>(this);
