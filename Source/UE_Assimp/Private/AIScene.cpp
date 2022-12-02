@@ -146,7 +146,7 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath, bool bIsNormalMap)
 
 	if (!EmbedTexture)
 	{
-		UE_LOG(LogAssimp, Error, TEXT("Texture was not found!"));
+		UE_LOG(LogAssimp, Log, TEXT("Embedded texture not found . Texture might be  external "));
 		return nullptr;
 	}
 

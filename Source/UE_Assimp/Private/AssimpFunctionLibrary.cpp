@@ -261,6 +261,9 @@ FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
 	return Transform;
 }
 
+
+
+
 FString UAssimpFunctionLibrary::GetBoneName(FAIBone Bone)
 {
 	return UTF8_TO_TCHAR(Bone.Bone->mName.C_Str());

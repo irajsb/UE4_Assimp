@@ -52,7 +52,14 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
 	static void ImportScenes(TArray<FString> InFilenames, UObject* ParentObject, TArray<UAIScene*>& Scenes, int Flags);
 	static FTransform aiMatToTransform(aiMatrix4x4 NodeTransform);
 
-
+	//Apply normal map settings to imported textures
+	UFUNCTION(BlueprintCallable)
+	static void ApplyNormalMapSettingsToTexture(UTexture2D* In)
+	{
+		In->CompressionSettings = TC_Normalmap;
+		In->SRGB = false;
+		In->UpdateResource();
+	}
 	//Bones
 
 	//! The name of the bone.
