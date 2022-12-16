@@ -191,12 +191,12 @@ UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath, bool bIsNormalMap)
 				}
 			}
 			FMemory::Memcpy(MipData, Pixels, PlatformData->Mips[0].BulkData.GetBulkDataSize());
+
+
+		        PlatformData->Mips[0].BulkData.Unlock();
+
+		        Result->UpdateResource();
 		}
-
-
-		Result->PlatformData->Mips[0].BulkData.Unlock();
-
-		Result->UpdateResource();
 	}
 	else
 	{
