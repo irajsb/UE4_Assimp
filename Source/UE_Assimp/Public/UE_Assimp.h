@@ -73,15 +73,15 @@ public:
 UENUM(Blueprintable,BlueprintType)
  enum EAssimpReturn {
 	/** Indicates that a function was successful */
-	ReturnSuccess = 0x0,
+	ReturnSuccess = 0,
 
     /** Indicates that a function failed */
-  ReturnFail = -0x1,
+  ReturnFail = -1,
 
     /** Indicates that not enough memory was available
     * to perform the requested operation
     */
-    ReturnOutOfMemory = -0x3,
+    ReturnOutOfMemory = -3,
 
 
 

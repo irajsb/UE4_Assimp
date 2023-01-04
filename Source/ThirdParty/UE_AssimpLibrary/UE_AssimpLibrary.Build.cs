@@ -16,6 +16,8 @@ public class UE_AssimpLibrary : ModuleRules
 			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Win64/"));
 		if(Target.Platform == UnrealTargetPlatform.Android)
 			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Android/"));
+		if(Target.Platform == UnrealTargetPlatform.Linux)
+			return Path.GetFullPath(Path.Combine(ModuleDirectory, "../../../Binaries/Linux/"));
 		return "";
 	}
 	
@@ -69,6 +71,18 @@ public class UE_AssimpLibrary : ModuleRules
 			PublicAdditionalLibraries.Add(Path.Combine(BinaryFolder, "arm64-v8a", "libassimp.so"));
 		}
 	}
+	else if (Target.Platform == UnrealTargetPlatform.Linux)
+        {
+			// Add the import library
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory,"assimp" ,"bin", "libassimp.so"));
+
+			Directory.CreateDirectory(BinaryFolder);
+			string AssimpSo = Path.Combine(ModuleDirectory, "assimp", "bin", "libassimp.so");
+			string BinPath = Path.Combine(ModuleDirectory, BinaryFolder, "libassimp.so");
+			
+		 	CopyFile(AssimpSo,BinPath);
+        }
+	
 	public void CopyFile(string Source, string Dest)
 	{
 		System.Console.WriteLine("Copying {0} to {1}", Source, Dest);
