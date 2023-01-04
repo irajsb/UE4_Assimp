@@ -403,6 +403,8 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Material")
 	void GetMaterialBaseColor(FLinearColor& BaseColor) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Material")
+	void GetMaterialOpacity(float& Opacity ) const;
 
 	// -------------------------------------------------------------------
 	/**
@@ -454,6 +456,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Material")
 	EAssimpReturn GetMaterialTexture(
 		EAiTextureType Type,
+		FVector2D& UVScale,
 		uint8 Index,
 		FString& Path,
 		EAiTextureMapping Mapping

@@ -21,12 +21,20 @@ void UAIMaterial::GetMaterialBaseColor(FLinearColor& BaseColor) const
 	}
 }
 
+void UAIMaterial::GetMaterialOpacity(float& Opacity) const
+{
+	if (AI_SUCCESS != Material->Get(AI_MATKEY_OPACITY, Opacity))
+	{
+		Opacity=1.f;
+	}
+}
+
 FString UAIMaterial::GetMaterialName() const
 {
 	return UTF8_TO_TCHAR(Material->GetName().C_Str());
 }
 
-EAssimpReturn UAIMaterial::GetMaterialTexture(EAiTextureType Type, uint8 Index, FString& Path,
+EAssimpReturn UAIMaterial::GetMaterialTexture(EAiTextureType Type,FVector2D &UVScale, uint8 Index, FString& Path,
                                               EAiTextureMapping Mapping)
 {
 	aiString TempPath;
@@ -37,7 +45,12 @@ EAssimpReturn UAIMaterial::GetMaterialTexture(EAiTextureType Type, uint8 Index, 
 	auto AIResult = Material->GetTexture(TempType, Index, &TempPath);
 	Path = UTF8_TO_TCHAR(TempPath.C_Str());
 
-
+	//Get UV
+	aiUVTransform UVTransform;
+	Material->Get(AI_MATKEY_UVTRANSFORM(TempType,0),UVTransform);
+	UVScale.X=UVTransform.mScaling.x;
+	UVScale.Y=UVTransform.mScaling.y;
+	
 	const EAssimpReturn Result = static_cast<EAssimpReturn>(AIResult);
 
 	return Result;
