@@ -66,7 +66,7 @@ FTransform UAINode::GetRootTransform()
 	return WorldTransform;
 }
 
-bool UAINode::GetAllMeshes(TArray<UAIMesh*>& Meshes)
+bool UAINode::GetNodeMeshes(TArray<UAIMesh*>& Meshes)
 {
 	UAIScene* Scene = GetScene();
 	if (Scene)

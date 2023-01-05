@@ -64,7 +64,7 @@ public:
 	FTransform GetRootTransform();
 	//false if empty
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
-	bool GetAllMeshes(TArray<UAIMesh*>& Meshes);
+	bool GetNodeMeshes(TArray<UAIMesh*>& Meshes);
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	UAIScene* GetScene();
 
