@@ -13,12 +13,12 @@
 	"CanContainContent": true,
 	"IsBetaVersion": false,
 	"IsExperimentalVersion": false,
-	"Installed": false,
+    "EnabledByDefault": true,
 	"Modules": [
 		{
 			"Name": "UE_Assimp",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "PreDefault"
 		}
 	],
         "Plugins": [
