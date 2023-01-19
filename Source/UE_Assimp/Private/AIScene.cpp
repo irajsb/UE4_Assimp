@@ -85,6 +85,10 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
             SceneObject->SceneScale = 1.0f;
             UE_LOG(LogAssimp, Warning, TEXT("No UnitScaleFactor in metadata."));
         }
+        if (SceneObject->SceneScale == 0.0f) {
+            SceneObject->SceneScale = 1.0f;
+            UE_LOG(LogAssimp, Warning, TEXT("Zero UnitScaleFactor replaced with 1.0."));
+        }
         UE_LOG(LogAssimp, Warning, TEXT("UnitScaleFactor: %g"), SceneObject->SceneScale);
 
         // The "parent" transform of the root node is an identity matrix.
