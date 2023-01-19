@@ -225,43 +225,49 @@ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* 
 
 	for (FString FileName : InFilenames)
 	{
-		const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), Flags);
-
-
-		if (!scene)
-		{
-			UE_LOG(LogAssimp, Error, TEXT("Error importing scene in assimpfunction library "))
-		}
-		else
-		{
-			UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
-			Object->FullFilePath=FileName;
+		UAIScene* Object = UAssimpFunctionLibrary::ImportScene(FileName, ParentObject, Flags);
+		if (Object != nullptr)
+                {
 			Scenes.Add(Object);
-		}
+                }
+	}
+}
+
+UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentObject, int Flags)
+{
+	Assimp::DefaultLogger::set(new UEAssimpStream());
+
+	const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), (unsigned int)Flags);
+
+	if (!scene)
+	{
+		UE_LOG(LogAssimp, Error, TEXT("Error importing scene in assimpfunction library "))
+		return nullptr;
+	}
+	else
+	{
+		UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
+		Object->FullFilePath=FileName;
+		return Object;
 	}
 }
 
 FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
 {
-	aiVector3t<float> Scale, Position;
-	aiQuaterniont<float> Rotation;
-	NodeTransform.Decompose(Scale, Rotation, Position);
-	FRotator CorrectedRotation = FQuat(-Rotation.x, Rotation.z, Rotation.y, Rotation.w).Rotator();
-	CorrectedRotation.Yaw = -CorrectedRotation.Yaw;
-	const FVector CorrectedPosition = FVector(Position.x * 100, Position.z * 100, Position.y * 100);
+	FMatrix mtx;
+	FTransform Transform;
 
-
-	FTransform Transform(CorrectedRotation, CorrectedPosition, FVector(Scale.x, Scale.z, Scale.y));
-
-
-	if (Transform.GetScale3D().IsZero())
-	{
-		Transform.SetScale3D(FVector(1));
+	// Note that assimp matrix is transpose of Unreal matrix.
+	// (The compiler will efficiently unroll these loops.)
+	for (int j = 0; j < 4; ++j) {
+		for (int i = 0; i < 4; ++i) {
+			mtx.M[i][j] = NodeTransform[j][i];
+		}
 	}
+	Transform = FTransform(mtx);
+
 	return Transform;
 }
-
-
 
 
 FString UAssimpFunctionLibrary::GetBoneName(FAIBone Bone)

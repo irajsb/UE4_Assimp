@@ -16,28 +16,14 @@ void UAINode::Setup(aiNode* InNode, UAIScene* Scene, const aiMatrix4x4& ParentTr
 {
 	this->Node = InNode;
 
-	
-
 	const aiMatrix4x4t<float> MyTransform = ParentTransform * Node->mTransformation;
-
-	for (unsigned Index = 0; Index < Node->mNumMeshes; Index++)
-	{
-	
-		UAIMesh* NewMeshData = NewObject<UAIMesh>(Scene, UAIMesh::StaticClass(), NAME_None, RF_Transient);
-		NewMeshData->Mesh = Scene->scene->mMeshes[Node->mMeshes[Index]];
-		WorldTransform = UAssimpFunctionLibrary::aiMatToTransform(MyTransform);
-		if (Scene->SceneScale != 0)
-		{
-			WorldTransform.SetScale3D(WorldTransform.GetScale3D() * Scene->SceneScale);
-		}
-	
-		Scene->OwnedMeshes[Node->mMeshes[Index]] = NewMeshData;
-		
-	}
+	WorldTransform = UAssimpFunctionLibrary::aiMatToTransform(MyTransform);
 
 	for (unsigned Index = 0; Index < Node->mNumChildren; Index++)
 	{
-		RegisterNewNode(Node->mChildren[Index], Scene, MyTransform);
+	        UAINode* KidNode = NewObject<UAINode>(this, UAINode::StaticClass(), NAME_None, RF_Transient);
+	        KidNode->Setup(Node->mChildren[Index], Scene, MyTransform);
+	        OwnedNodes.Add(KidNode);
 	}
 }
 
@@ -105,9 +91,3 @@ UAIScene* UAINode::GetScene()
 	return nullptr;
 }
 
-void UAINode::RegisterNewNode(aiNode* InNode, UAIScene* Scene, const aiMatrix4x4& ParentTransform)
-{
-	UAINode* Object = NewObject<UAINode>(this, UAINode::StaticClass(), NAME_None, RF_Transient);
-	Object->Setup(InNode, Scene, ParentTransform);
-	OwnedNodes.Add(Object);
-}

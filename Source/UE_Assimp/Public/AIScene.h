@@ -26,6 +26,7 @@ class UE_ASSIMP_API UAIScene : public UObject
 public:
 	static UAIScene* InternalConstructNewScene(UObject* Parent, const aiScene* Scene);
 
+
 	/*WIP Function:
 	WIll spawn all meshes in most optimised fashion 
 	*/
@@ -54,6 +55,8 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Scene")
 	const TArray<UAICamera*>& GetAllCameras() const;
 
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Scene")
+	float GetUnitScaleFactor();
 
 	//Texture
 	//! Returns an embedded texture. if null then check path or texture is not embedded and must be imported using unreal default import texture function

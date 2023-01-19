@@ -26,16 +26,18 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 	SceneObject->OwnedLights.AddUninitialized(Scene->mNumLights);
 	SceneObject->OwnedCameras.AddUninitialized(Scene->mNumCameras);
 	SceneObject->OwnedMaterials.AddUninitialized(Scene->mNumMaterials);
-	SceneObject->scene->mMetaData->Get("UnitScaleFactor", SceneObject->SceneScale);
-	//RegisterNodes
-	//if its root node owned by scene
-
-	UAINode* Object = NewObject<UAINode>(SceneObject, UAINode::StaticClass(), NAME_None, RF_Transient);
-	SceneObject->OwnedRootNode = Object;
 
 
-	Object->Setup(SceneObject->scene->mRootNode, SceneObject, Scene->mRootNode->mTransformation);
-
+        //Add Meshes
+	if (Scene->HasMeshes())
+	{
+		for (unsigned Index = 0; Index < Scene->mNumMeshes; Index++)
+		{
+			UAIMesh* Mesh = NewObject<UAIMesh>(SceneObject, UAIMesh::StaticClass(), NAME_None, RF_Transient);
+			Mesh->Mesh = Scene->mMeshes[Index];
+			SceneObject->OwnedMeshes[Index] = Mesh;
+		}
+	}
 
 	//Add Cams
 	if (Scene->HasCameras())
@@ -47,6 +49,7 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 			SceneObject->OwnedCameras[Index] = Camera;
 		}
 	}
+
 	//Add Lights
 	if (Scene->HasLights())
 	{
@@ -58,6 +61,8 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 			SceneObject->OwnedLights[Index] = Light;
 		}
 	}
+
+	//Add Materials
 	if (Scene->HasMaterials())
 	{
 		for (unsigned Index = 0; Index < Scene->mNumMaterials; Index++)
@@ -69,8 +74,33 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 		}
 	}
 
+        //Build Node Tree
+	UAINode* RootNode = NewObject<UAINode>(SceneObject, UAINode::StaticClass(), NAME_None, RF_Transient);
+	SceneObject->OwnedRootNode = RootNode;
+
+
+        // If assimp scene does not have UnitScaleFactor in metadata, presume 1.0f
+	bool success = SceneObject->scene->mMetaData->Get("UnitScaleFactor", SceneObject->SceneScale);
+        if (!success) {
+            SceneObject->SceneScale = 1.0f;
+            UE_LOG(LogAssimp, Warning, TEXT("No UnitScaleFactor in metadata."));
+        }
+        UE_LOG(LogAssimp, Warning, TEXT("UnitScaleFactor: %g"), SceneObject->SceneScale);
+
+        // The "parent" transform of the root node is an identity matrix.
+        // However, we apply the UnitScaleFactor here (once) as the parent transform as we call Setup.
+        aiMatrix4x4t<float> Identity;
+        aiMatrix4x4t<float>::Scaling( aiVector3t(SceneObject->SceneScale), Identity);
+
+	RootNode->Setup(Scene->mRootNode, SceneObject, Identity);
 
 	return SceneObject;
+}
+
+
+float UAIScene::GetUnitScaleFactor()
+{
+	return SceneScale;
 }
 
 TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform, TSubclassOf<AActor> ClassToSpawn)
@@ -95,7 +125,7 @@ TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform, TSubclass
 	}
 	else
 	{
-		UE_LOG(LogAssimp, Error, TEXT(" Assimp scene is not valid "));
+		UE_LOG(LogAssimp, Error, TEXT("Assimp scene is not valid "));
 	}
 
 

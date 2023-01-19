@@ -20,7 +20,7 @@ TEnumAsByte<EAssimpLightType> UAILight::GetLightType()
 
 FVector UAILight::GetLightPosition()
 {
-	return ToVectorCM(Light->mPosition);
+	return ToVector(Light->mPosition);
 }
 
 FVector UAILight::GetLightDirection()
