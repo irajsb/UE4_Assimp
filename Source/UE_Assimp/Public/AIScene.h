@@ -24,7 +24,7 @@ class UE_ASSIMP_API UAIScene : public UObject
 
 	//TODO Get Meta data 
 public:
-	static UAIScene* InternalConstructNewScene(UObject* Parent, const aiScene* Scene);
+	static UAIScene* InternalConstructNewScene(UObject* Parent, const aiScene* Scene, const bool DisableAutoSpaceChange);
 
 
 	/*WIP Function:

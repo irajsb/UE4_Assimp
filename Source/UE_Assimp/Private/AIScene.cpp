@@ -15,7 +15,7 @@
 #include "Serialization/BufferArchive.h"
 
 
-UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene)
+UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene, const bool DisableAutoSpaceChange)
 {
 	//todo check if object is already created and skip creation and return object 
 	UAIScene* SceneObject = NewObject<UAIScene>(Parent, UAIScene::StaticClass(), NAME_None, RF_Transient);
@@ -92,11 +92,22 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
         UE_LOG(LogAssimp, Warning, TEXT("UnitScaleFactor: %g"), SceneObject->SceneScale);
 
         // The "parent" transform of the root node is an identity matrix.
-        // However, we apply the UnitScaleFactor here (once) as the parent transform as we call Setup.
-        aiMatrix4x4t<float> Identity;
-        aiMatrix4x4t<float>::Scaling( aiVector3t(SceneObject->SceneScale), Identity);
+        // However, we optionally apply the UnitScaleFactor and an x-rotation to move from y-up to z-up.
+        aiMatrix4x4t<float> AdjustmentXfm;
+        if (!DisableAutoSpaceChange) {
+            aiMatrix4x4t<float> tmpRot;
+            aiMatrix4x4t<float> tmpScale;
+            aiMatrix4x4t<float>::RotationX( M_PI/2., tmpRot);
+            aiMatrix4x4t<float>::Scaling( aiVector3t(SceneObject->SceneScale), tmpScale);
+            AdjustmentXfm = tmpScale * tmpRot;
+        }
 
-	RootNode->Setup(Scene->mRootNode, SceneObject, Identity);
+	RootNode->Setup(Scene->mRootNode, SceneObject, AdjustmentXfm);
+
+        // Changes root transformation to incorporate unitscalefactor and x-rotation.
+        if (!DisableAutoSpaceChange) {
+             Scene->mRootNode->mTransformation = AdjustmentXfm * Scene->mRootNode->mTransformation;
+        }
 
 	return SceneObject;
 }

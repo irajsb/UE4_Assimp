@@ -219,13 +219,13 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 
 
 void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
-                                          TArray<UAIScene*>& Scenes, int Flags)
+                                          TArray<UAIScene*>& Scenes, int Flags, bool DisableAutoSpaceChange)
 {
 	Assimp::DefaultLogger::set(new UEAssimpStream());
 
 	for (FString FileName : InFilenames)
 	{
-		UAIScene* Object = UAssimpFunctionLibrary::ImportScene(FileName, ParentObject, Flags);
+		UAIScene* Object = UAssimpFunctionLibrary::ImportScene(FileName, ParentObject, Flags, DisableAutoSpaceChange);
 		if (Object != nullptr)
                 {
 			Scenes.Add(Object);
@@ -233,9 +233,13 @@ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* 
 	}
 }
 
-UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentObject, int Flags)
+UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentObject, int Flags, bool DisableAutoSpaceChange)
 {
 	Assimp::DefaultLogger::set(new UEAssimpStream());
+
+        if (!DisableAutoSpaceChange) {
+           Flags |= aiProcess_MakeLeftHanded | aiProcessPreset_TargetRealtime_Quality;
+        }
 
 	const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), (unsigned int)Flags);
 
@@ -246,7 +250,7 @@ UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentO
 	}
 	else
 	{
-		UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene);
+		UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene, DisableAutoSpaceChange);
 		Object->FullFilePath=FileName;
 		return Object;
 	}
