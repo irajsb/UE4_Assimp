@@ -256,6 +256,63 @@ UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentO
 	}
 }
 
+
+
+void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObject* ParentObject, int Flags, bool DisableAutoSpaceChange,FOnProgressUpdated OnProgressUpdated,FOnImportSceneComplete OnImportSceneComplete)
+{
+
+	//I'm a noob in realms of async if you find a better way to keep data do a pull request
+	Assimp::DefaultLogger::set(new UEAssimpStream());
+
+	if (!DisableAutoSpaceChange) {
+		Flags |= aiProcess_MakeLeftHanded | aiProcessPreset_TargetRealtime_Quality;
+	}
+	
+	static  int NumOfThreads=0;
+	static int TotalThreads=0;
+	NumOfThreads=TotalThreads=InFilenames.Num();
+	static TArray<UAIScene*> AIScenes;
+	AIScenes.Empty();
+	
+	if(NumOfThreads==0)
+	{
+		return;
+	}
+	for( FString FileName:InFilenames)
+	{
+		AsyncTask(ENamedThreads::AnyNormalThreadNormalTask,[&]()
+	   { 
+			const struct aiScene* scene = aiImportFile( TCHAR_TO_UTF8( *FileName),Flags);
+
+			if( !scene) {
+
+				UE_LOG(LogAssimp,Error,TEXT("Error importing scene in assimpfunction library async"))
+				
+			}else
+			{
+		   AsyncTask(ENamedThreads::GameThread,[&]()
+		   {
+							
+			   UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene,DisableAutoSpaceChange);
+								
+			   NumOfThreads=NumOfThreads-1;
+			   AIScenes.Add(Object);
+			   OnProgressUpdated.Execute(1-static_cast<float>(NumOfThreads)/TotalThreads,Object);
+						
+			   if(NumOfThreads==0)
+			   {
+			   const	float EndTime=ParentObject->GetWorld()->GetTimeSeconds();
+			
+				   OnImportSceneComplete.Execute(AIScenes);
+				  
+								
+			   }
+		   });
+		}
+});
+	}
+}
+
 FTransform UAssimpFunctionLibrary::aiMatToTransform(aiMatrix4x4 NodeTransform)
 {
 	FMatrix mtx;
