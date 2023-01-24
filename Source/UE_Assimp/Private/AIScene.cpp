@@ -15,7 +15,7 @@
 #include "Serialization/BufferArchive.h"
 
 
-UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene)
+UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene, const bool DisableAutoSpaceChange)
 {
 	//todo check if object is already created and skip creation and return object 
 	UAIScene* SceneObject = NewObject<UAIScene>(Parent, UAIScene::StaticClass(), NAME_None, RF_Transient);
@@ -26,16 +26,18 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 	SceneObject->OwnedLights.AddUninitialized(Scene->mNumLights);
 	SceneObject->OwnedCameras.AddUninitialized(Scene->mNumCameras);
 	SceneObject->OwnedMaterials.AddUninitialized(Scene->mNumMaterials);
-	SceneObject->scene->mMetaData->Get("UnitScaleFactor", SceneObject->SceneScale);
-	//RegisterNodes
-	//if its root node owned by scene
-
-	UAINode* Object = NewObject<UAINode>(SceneObject, UAINode::StaticClass(), NAME_None, RF_Transient);
-	SceneObject->OwnedRootNode = Object;
 
 
-	Object->Setup(SceneObject->scene->mRootNode, SceneObject, Scene->mRootNode->mTransformation);
-
+        //Add Meshes
+	if (Scene->HasMeshes())
+	{
+		for (unsigned Index = 0; Index < Scene->mNumMeshes; Index++)
+		{
+			UAIMesh* Mesh = NewObject<UAIMesh>(SceneObject, UAIMesh::StaticClass(), NAME_None, RF_Transient);
+			Mesh->Mesh = Scene->mMeshes[Index];
+			SceneObject->OwnedMeshes[Index] = Mesh;
+		}
+	}
 
 	//Add Cams
 	if (Scene->HasCameras())
@@ -47,6 +49,7 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 			SceneObject->OwnedCameras[Index] = Camera;
 		}
 	}
+
 	//Add Lights
 	if (Scene->HasLights())
 	{
@@ -58,6 +61,8 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 			SceneObject->OwnedLights[Index] = Light;
 		}
 	}
+
+	//Add Materials
 	if (Scene->HasMaterials())
 	{
 		for (unsigned Index = 0; Index < Scene->mNumMaterials; Index++)
@@ -69,8 +74,48 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 		}
 	}
 
+        //Build Node Tree
+	UAINode* RootNode = NewObject<UAINode>(SceneObject, UAINode::StaticClass(), NAME_None, RF_Transient);
+	SceneObject->OwnedRootNode = RootNode;
+
+
+        // If assimp scene does not have UnitScaleFactor in metadata, presume 1.0f
+	bool success = SceneObject->scene->mMetaData->Get("UnitScaleFactor", SceneObject->SceneScale);
+        if (!success) {
+            SceneObject->SceneScale = 1.0f;
+            UE_LOG(LogAssimp, Warning, TEXT("No UnitScaleFactor in metadata."));
+        }
+        if (SceneObject->SceneScale == 0.0f) {
+            SceneObject->SceneScale = 1.0f;
+            UE_LOG(LogAssimp, Warning, TEXT("Zero UnitScaleFactor replaced with 1.0."));
+        }
+        UE_LOG(LogAssimp, Warning, TEXT("UnitScaleFactor: %g"), SceneObject->SceneScale);
+
+        // The "parent" transform of the root node is an identity matrix.
+        // However, we optionally apply the UnitScaleFactor and an x-rotation to move from y-up to z-up.
+        aiMatrix4x4t<float> AdjustmentXfm;
+        if (!DisableAutoSpaceChange) {
+            aiMatrix4x4t<float> tmpRot;
+            aiMatrix4x4t<float> tmpScale;
+            aiMatrix4x4t<float>::RotationX( M_PI/2., tmpRot);
+            aiMatrix4x4t<float>::Scaling( aiVector3t(SceneObject->SceneScale), tmpScale);
+            AdjustmentXfm = tmpScale * tmpRot;
+        }
+
+	RootNode->Setup(Scene->mRootNode, SceneObject, AdjustmentXfm);
+
+        // Changes root transformation to incorporate unitscalefactor and x-rotation.
+        if (!DisableAutoSpaceChange) {
+             Scene->mRootNode->mTransformation = AdjustmentXfm * Scene->mRootNode->mTransformation;
+        }
 
 	return SceneObject;
+}
+
+
+float UAIScene::GetUnitScaleFactor()
+{
+	return SceneScale;
 }
 
 TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform, TSubclassOf<AActor> ClassToSpawn)
@@ -95,7 +140,7 @@ TArray<UMeshComponent*> UAIScene::SpawnAllMeshes(FTransform Transform, TSubclass
 	}
 	else
 	{
-		UE_LOG(LogAssimp, Error, TEXT(" Assimp scene is not valid "));
+		UE_LOG(LogAssimp, Error, TEXT("Assimp scene is not valid "));
 	}
 
 

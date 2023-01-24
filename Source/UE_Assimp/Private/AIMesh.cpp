@@ -87,7 +87,7 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
 		Normals[Index] = ToVector(Mesh->mNormals[Index]);
-		Vertices[Index] = ToVectorCM(Mesh->mVertices[Index]);
+		Vertices[Index] = ToVector(Mesh->mVertices[Index]);
 
 		if (Mesh->mTangents)
 		{
@@ -129,7 +129,7 @@ UStaticMesh* UAIMesh::GetStaticMesh()
 	VertexInstances.AddUninitialized(Mesh->mNumVertices);
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
-		auto VertexID = MeshDescBuilder.AppendVertex(ToVectorCM(Mesh->mVertices[Index]));
+		auto VertexID = MeshDescBuilder.AppendVertex(ToVector(Mesh->mVertices[Index]));
 
 		auto Instance = MeshDescBuilder.AppendInstance(VertexID);
 		VertexInstances[Index] = Instance;

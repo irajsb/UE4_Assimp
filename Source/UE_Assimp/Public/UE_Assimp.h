@@ -5,8 +5,8 @@
 #include "assimp/Logger.hpp"
 #include "assimp/LogStream.hpp"
 #include "Modules/ModuleManager.h"
-#define ToVector(In) FVector(In.x, In.z, In.y)
-#define ToVectorCM(In) FVector(In.x*100, In.z*100, In.y*100)//convert Meters to cm
+#define ToVector(In) FVector(In.x, In.y, In.z)
+#define ToVectorCM(In) FVector(In.x*100, In.y*100, In.z*100) //convert Meters to cm (DEPRECATED)
 DECLARE_LOG_CATEGORY_EXTERN(LogAssimp, Log, All);
 
 

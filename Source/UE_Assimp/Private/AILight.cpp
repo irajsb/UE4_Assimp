@@ -20,7 +20,7 @@ TEnumAsByte<EAssimpLightType> UAILight::GetLightType()
 
 FVector UAILight::GetLightPosition()
 {
-	return ToVectorCM(Light->mPosition);
+	return ToVector(Light->mPosition);
 }
 
 FVector UAILight::GetLightDirection()
@@ -75,5 +75,5 @@ float UAILight::GetConeOuterAngle()
 
 FVector2D UAILight::GetAreaLightSize()
 {
-	return FVector2D( Light->mSize.x*100.f,Light->mSize.y*100.f);
+	return FVector2D( Light->mSize.x,Light->mSize.y);
 }
