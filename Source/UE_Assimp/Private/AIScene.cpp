@@ -97,8 +97,8 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
         if (!DisableAutoSpaceChange) {
             aiMatrix4x4t<float> tmpRot;
             aiMatrix4x4t<float> tmpScale;
-            aiMatrix4x4t<float>::RotationX( M_PI/2., tmpRot);
-            aiMatrix4x4t<float>::Scaling( aiVector3t(SceneObject->SceneScale), tmpScale);
+            aiMatrix4x4t<float>::RotationX( PI/2., tmpRot);
+            aiMatrix4x4t<float>::Scaling( aiVector3t<float>(SceneObject->SceneScale), tmpScale);
             AdjustmentXfm = tmpScale * tmpRot;
         }
 
