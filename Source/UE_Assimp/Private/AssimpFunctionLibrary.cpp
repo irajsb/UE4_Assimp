@@ -17,6 +17,29 @@
 #include <Runtime\Core\Public\Windows\COMPointer.h>
 #endif
 
+#if PLATFORM_MAC
+// Access to Objective-C functions for C++.
+#include <CoreFoundation/CoreFoundation.h>
+#include <objc/objc.h>
+#include <objc/objc-runtime.h>
+#include <objc/message.h>
+
+// Access to MainThread wrapper.
+#include "Mac/CocoaThread.h"
+
+// Helpers for calling objective-c routines at runtime.
+// The objc_msgSend function needs purpose-built casting.
+#define id_OBJC_MSGSEND ((id (*)(id, SEL))objc_msgSend)
+#define void_OBJC_MSGSEND_bool ((void (*)(id, SEL, bool))objc_msgSend)
+#define id_OBJC_MSGSEND_id ((id (*)(id, SEL, id))objc_msgSend)
+#define void_OBJC_MSGSEND_id ((void (*)(id, SEL, id))objc_msgSend)
+#define id_OBJC_MSGSEND_cstr ((id (*)(id, SEL, const char *))objc_msgSend)
+#define id_OBJC_MSGSEND_int ((id (*)(id, SEL, int))objc_msgSend)
+#define cstr_OBJC_MSGSEND ((const char *(*)(id, SEL))objc_msgSend)
+#define int_OBJC_MSGSEND ((int (*)(id, SEL))objc_msgSend)
+
+#endif
+
 #define MAX_FILETYPES_STR 4096
 #define MAX_FILENAME_STR 65536
 
@@ -214,7 +237,41 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 	return false;
 #endif
 #pragma endregion
-	return false;
+
+#pragma region MAC
+#if PLATFORM_MAC
+
+    bool bSuccess = false;
+
+    OutFilenames.Empty();
+
+    MainThreadCall(^{
+        SCOPED_AUTORELEASE_POOL;
+        id panel = id_OBJC_MSGSEND((id)objc_getClass("NSOpenPanel"), sel_getUid("openPanel"));
+        void_OBJC_MSGSEND_bool(panel, sel_getUid("setCanChooseFiles:"), YES);
+        void_OBJC_MSGSEND_bool(panel, sel_getUid("setCanChooseDirectories:"), NO);
+        void_OBJC_MSGSEND_bool(panel, sel_getUid("setAllowsMultipleSelection:"), YES);
+        void_OBJC_MSGSEND_id(panel, sel_getUid("setDirectoryURL:"),
+            id_OBJC_MSGSEND_id((id)objc_getClass("NSURL"), sel_getUid("fileURLWithPath:"),
+            id_OBJC_MSGSEND_cstr((id)objc_getClass("NSString"), sel_getUid("stringWithUTF8String:"), TCHAR_TO_UTF8(&DefaultPath))));
+        int response = int_OBJC_MSGSEND(panel, sel_getUid("runModal"));
+
+        if (response == NSModalResponseOK) {
+            id URLs = id_OBJC_MSGSEND(panel, sel_getUid("URLs"));
+            int num_URLs = int_OBJC_MSGSEND(URLs, sel_getUid("count"));
+            for (int i = 0; i < num_URLs; ++i) {
+                id fileURL = id_OBJC_MSGSEND_int(URLs, sel_getUid("objectAtIndex:"), i);
+                id path = id_OBJC_MSGSEND(fileURL, sel_getUid("path"));
+                const char *path_utf8 = cstr_OBJC_MSGSEND(path, sel_getUid("UTF8String"));
+	        OutFilenames.Add(FString(path_utf8));
+            }
+        }
+    }, UnrealShowEventMode, true);
+
+    return OutFilenames.Num() > 0;
+
+#endif
+#pragma endregion
 }
 
 
