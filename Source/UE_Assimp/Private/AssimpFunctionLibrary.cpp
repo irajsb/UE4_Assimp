@@ -245,6 +245,11 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 
     OutFilenames.Empty();
 
+    // TODO: honor multi select flag.
+    // TODO: set dialog title
+    // TODO: set default file
+    // TODO: enable file type filters.
+
     MainThreadCall(^{
         SCOPED_AUTORELEASE_POOL;
         id panel = id_OBJC_MSGSEND((id)objc_getClass("NSOpenPanel"), sel_getUid("openPanel"));
