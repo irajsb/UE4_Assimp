@@ -133,7 +133,15 @@ UStaticMesh* UAIMesh::GetStaticMesh()
 
 		auto Instance = MeshDescBuilder.AppendInstance(VertexID);
 		VertexInstances[Index] = Instance;
+		
+		if(Mesh->HasNormals())
+		{
 		MeshDescBuilder.SetInstanceNormal(Instance,ToVector(Mesh->mNormals[Index]));
+		}else
+		{
+			UE_LOG(LogAssimp,Warning,TEXT("Normals not found consider generating them with assimp"))
+		}
+		
 		if (Mesh->HasTextureCoords(0))
 		{
 			MeshDescBuilder.SetInstanceUV(
