@@ -81,6 +81,7 @@ UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Sc
 
         // If assimp scene does not have UnitScaleFactor in metadata, presume 1.0f
 	bool success = SceneObject->scene->mMetaData->Get("UnitScaleFactor", SceneObject->SceneScale);
+	
         if (!success) {
             SceneObject->SceneScale = 1.0f;
             UE_LOG(LogAssimp, Warning, TEXT("No UnitScaleFactor in metadata."));
@@ -280,4 +281,9 @@ EPixelFormat UAIScene::GetPixelFormat(const aiTexture* Texture)
 		UE_LOG(LogAssimp, Fatal, TEXT("Pixel format not implemented"));
 	}
 	return EPixelFormat::PF_Unknown;
+}
+
+ float UAIScene::GetSceneScale()
+{
+	return SceneScale;
 }

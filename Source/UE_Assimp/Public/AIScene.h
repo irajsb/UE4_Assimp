@@ -66,13 +66,15 @@ public:
 	UTexture2D* GetEmbeddedTexture(FString FilePath, bool bIsNormalMap);
 	UPROPERTY(BlueprintReadOnly)
 	FString FullFilePath;
+	UFUNCTION(BlueprintCallable,BlueprintPure)
+	float GetSceneScale();
 
 
-	float SceneScale;
+	
 
 	static EPixelFormat GetPixelFormat(const aiTexture* Texture);
 
-
+private:
 	//For Object Creation
 	UPROPERTY(Transient)
 	TArray<UAIMesh*> OwnedMeshes;
@@ -85,7 +87,8 @@ public:
 	UPROPERTY(Transient)
 	TArray<UAIMaterial*> OwnedMaterials;
 	aiScene* scene;
-
-
 	virtual void BeginDestroy() override;
+	float SceneScale;
 };
+
+
