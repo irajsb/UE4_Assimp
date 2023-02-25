@@ -54,6 +54,8 @@ public:
 	UAIMesh* GetMeshAtIndex(int Index);
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Scene")
 	const TArray<UAICamera*>& GetAllCameras() const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Scene")
+	const TArray<UAILight*>& GetAllLights() const;
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Scene")
 	float GetUnitScaleFactor();

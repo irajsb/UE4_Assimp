@@ -182,6 +182,11 @@ const TArray<UAICamera*>& UAIScene::GetAllCameras() const
 	return OwnedCameras;
 }
 
+const TArray<UAILight*>& UAIScene::GetAllLights() const
+{
+	return OwnedLights;
+}
+
 UTexture2D* UAIScene::GetEmbeddedTexture(FString FilePath, bool bIsNormalMap)
 {
 	const auto EmbedTexture = scene->GetEmbeddedTexture(TCHAR_TO_UTF8(*FilePath));
