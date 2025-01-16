@@ -12,7 +12,7 @@ DECLARE_LOG_CATEGORY_EXTERN(LogAssimp, Log, All);
 
 
 UENUM(BlueprintType)
-enum ETaskResult
+enum class ETaskResult : uint8
 {
 	Success,
 	Fail

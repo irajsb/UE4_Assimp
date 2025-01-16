@@ -8,6 +8,10 @@
 #include "MeshDescriptionBuilder.h"
 #include "StaticMeshDescription.h"
 #include "UE_Assimp.h"
+#include "GeometryFramework/Public/UDynamicMesh.h"
+#include "GeometryScript/MeshBasicEditFunctions.h"
+#include "GeometryScript/MeshMaterialFunctions.h"
+#include "GeometryScript/MeshUVFunctions.h"
 
 void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 {
@@ -176,6 +180,56 @@ UStaticMesh* UAIMesh::GetStaticMesh()
 
 
 	return StaticMesh;
+}
+
+UDynamicMesh* UAIMesh::GetDynamicMesh()
+{
+	if (DynamicMesh)
+	{
+		return DynamicMesh;
+	}
+
+	DynamicMesh = NewObject<UDynamicMesh>();
+	// Add vertices to mesh
+	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
+	{
+		const FVector Vertex = FVector(Mesh->mVertices[Index].x, Mesh->mVertices[Index].y, Mesh->mVertices[Index].z);
+		int NewVertexIndex;
+		UGeometryScriptLibrary_MeshBasicEditFunctions::AddVertexToMesh(DynamicMesh, Vertex, NewVertexIndex);
+	}
+	// Add triangles to mesh
+	for (unsigned int i = 0; i < Mesh->mNumFaces; i++)
+	{
+		const auto Face = Mesh->mFaces[i];
+		if (Face.mNumIndices > 2)
+		{
+			const FIntVector NewTriangle = FIntVector(Face.mIndices[0], Face.mIndices[1], Face.mIndices[2]);
+			int NewTriangleIndex;
+			UGeometryScriptLibrary_MeshBasicEditFunctions::AddTriangleToMesh(
+				DynamicMesh, NewTriangle, NewTriangleIndex);
+			// Set UVs
+			if (Mesh->HasTextureCoords(0))
+			{
+				FGeometryScriptUVTriangle UVTriangle;
+				UVTriangle.UV0 = FVector2D(Mesh->mTextureCoords[0][NewTriangle.X].x,
+				                           Mesh->mTextureCoords[0][NewTriangle.X].y);
+				UVTriangle.UV1 = FVector2D(Mesh->mTextureCoords[0][NewTriangle.Y].x,
+				                           Mesh->mTextureCoords[0][NewTriangle.Y].y);
+				UVTriangle.UV2 = FVector2D(Mesh->mTextureCoords[0][NewTriangle.Z].x,
+				                           Mesh->mTextureCoords[0][NewTriangle.Z].y);
+				bool bIsValidTriangle;
+				UGeometryScriptLibrary_MeshUVFunctions::SetMeshTriangleUVs(DynamicMesh, 0, NewTriangleIndex,
+				                                                           UVTriangle, bIsValidTriangle);
+			}
+		}
+	}
+	// Enable Material IDs
+	UGeometryScriptLibrary_MeshMaterialFunctions::EnableMaterialIDs(DynamicMesh);
+	UGeometryScriptLibrary_MeshMaterialFunctions::RemapMaterialIDs(DynamicMesh, 0, GetMaterialIndex());
+
+	// @TODO: Normals and Collision
+
+	return DynamicMesh;
 }
 
 

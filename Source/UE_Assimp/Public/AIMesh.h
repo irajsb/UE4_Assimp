@@ -12,6 +12,8 @@
 #include "ProceduralMeshComponent.h"
 #include "AIMesh.generated.h"
 
+class UDynamicMesh;
+
 /**
  * 
  */
@@ -38,7 +40,13 @@ friend UAIScene;
 	UFUNCTION(BlueprintCallable)
 	void GetMeshDataForProceduralMesh(TArray<FVector>&Vertices,TArray<int32>& Triangles,TArray<FVector>& Normals, TArray<FVector2D>& UV0, TArray<FProcMeshTangent>& Tangents);
 	UFUNCTION(BlueprintCallable)
-	 UStaticMesh* GetStaticMesh();
+	UStaticMesh* GetStaticMesh();
+	/**
+	 * Get Dynamic Mesh from this mesh
+	 * @return 
+	 */
+	UFUNCTION(BlueprintCallable, Category="Assimp|AIMesh")
+	UDynamicMesh* GetDynamicMesh();
 	
 	//Num of vertices array
 	UFUNCTION(BlueprintCallable,BlueprintPure)
@@ -78,4 +86,6 @@ friend UAIScene;
 	UStaticMesh* StaticMesh = nullptr;
 	aiMesh* Mesh;
 
+	UPROPERTY()
+	UDynamicMesh* DynamicMesh = nullptr;
 };

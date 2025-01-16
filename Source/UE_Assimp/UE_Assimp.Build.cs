@@ -26,6 +26,9 @@ public class UE_Assimp : ModuleRules
 			new string[]
 			{
 				"Core",
+				"GeometryCore",
+				"GeometryFramework",
+				"GeometryScriptingCore",
 				"UE_AssimpLibrary",
 				
 				// ... add other public dependencies that you statically link with here ...

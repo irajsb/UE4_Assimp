@@ -20,11 +20,15 @@
 			"Type": "Runtime",
 			"LoadingPhase": "PreDefault"
 		}
-	],
-        "Plugins": [
-                {
-                  "Name": "ProceduralMeshComponent",
-                  "Enabled": true
-                }
-         ]
+	], 
+  	"Plugins": [
+      	{
+          	"Name": "ProceduralMeshComponent",
+          	"Enabled": true
+        },
+      	{
+          	"Name": "GeometryProcessing",
+          	"Enabled": true
+        }
+    ]
 }
