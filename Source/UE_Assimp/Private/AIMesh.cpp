@@ -8,7 +8,7 @@
 #include "MeshDescriptionBuilder.h"
 #include "StaticMeshDescription.h"
 #include "UE_Assimp.h"
-#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION > 3
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION > 2
 #include "UDynamicMesh.h"
 #else
 #include "GeometryFramework/Public/UDynamicMesh.h"
