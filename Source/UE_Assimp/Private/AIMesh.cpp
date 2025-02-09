@@ -3,7 +3,6 @@
 
 #include "AIMesh.h"
 
-#include "AIScene.h"
 #include "KismetProceduralMeshLibrary.h"
 #include "MeshDescriptionBuilder.h"
 #include "StaticMeshDescription.h"

@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 
 #include "assimp/scene.h"
-#include "UObject/NoExportTypes.h"
 #include "AIScene.generated.h"
 
 /**
@@ -24,7 +23,7 @@ class UE_ASSIMP_API UAIScene : public UObject
 
 	//TODO Get Meta data 
 public:
-	static UAIScene* InternalConstructNewScene(UObject* Parent, const aiScene* Scene, const bool DisableAutoSpaceChange);
+	static UAIScene* InternalConstructNewScene(UObject* WorldContextObject, const aiScene* Scene, const bool DisableAutoSpaceChange);
 
 
 	/*WIP Function:

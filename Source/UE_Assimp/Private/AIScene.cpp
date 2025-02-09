@@ -9,16 +9,14 @@
 #include "AINode.h"
 #include "AIMaterial.h"
 #include "AssimpMesh.h"
-#include "ProceduralMeshComponent.h"
 #include "assimp/cimport.h"
 #include "Kismet/KismetRenderingLibrary.h"
-#include "Serialization/BufferArchive.h"
 
 
-UAIScene* UAIScene::InternalConstructNewScene(UObject* Parent, const aiScene* Scene, const bool DisableAutoSpaceChange)
+UAIScene* UAIScene::InternalConstructNewScene(UObject* WorldContextObject, const aiScene* Scene, const bool DisableAutoSpaceChange)
 {
 	//todo check if object is already created and skip creation and return object 
-	UAIScene* SceneObject = NewObject<UAIScene>(Parent, UAIScene::StaticClass(), NAME_None, RF_Transient);
+	UAIScene* SceneObject = NewObject<UAIScene>(WorldContextObject, UAIScene::StaticClass(), NAME_None, RF_Transient);
 	SceneObject->scene = const_cast<aiScene*>(Scene);
 	//Setup Meshes
 	SceneObject->OwnedMeshes.Reset();
