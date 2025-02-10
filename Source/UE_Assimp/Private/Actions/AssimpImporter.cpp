@@ -1,10 +1,15 @@
-#include "AssimpImporter.h"
+#include "Actions/AssimpImporter.h"
 
 #include "AIScene.h"
 #include "UE_Assimp.h"
 #include "assimp/cimport.h"
 #include "assimp/DefaultLogger.hpp"
 #include "assimp/postprocess.h"
+
+UAssimpImporter::~UAssimpImporter()
+{
+	CancelImport();
+}
 
 UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
                                                     const TArray<FString>& InFileNames, const int Flags,
@@ -23,6 +28,13 @@ UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
 	return AssimpImporter;
 }
 
+bool UAssimpImporter::CancelImport()
+{
+	bImportCancelled = true;
+	UE_LOG(LogAssimp, Log, TEXT("Cancelled import %s"), *GetNameSafe(this));
+	return true;
+}
+
 void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 {
 	Async(EAsyncExecution::ThreadPool, [this, InFileNames]()
@@ -31,25 +43,35 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 
 		for (int i = 0; i < InFileNames.Num(); i++)
 		{
+			if (bImportCancelled)
+			{
+				break;
+			}
 			UAIScene* AIScene = AssimpImportFile(InFileNames[i]);
 			float Progress = static_cast<float>(i + 1) / InFileNames.Num();
 			EAssimpImportResult Result = IsValid(AIScene)
 				                             ? EAssimpImportResult::Success
 				                             : EAssimpImportResult::InvalidAIScene;
-			AsyncTask(ENamedThreads::GameThread,
-			          [this, Result, AIScene, Progress]()
-			          {
-				          OnProgress.ExecuteIfBound(Result, AIScene, Progress);
-			          });
+			if (bImportCancelled)
+			{
+				break;
+			}
+			AsyncTask(ENamedThreads::GameThread, [this, Result, AIScene, Progress]()
+			{
+				OnProgress.ExecuteIfBound(Result, AIScene, Progress);
+			});
 			UE_LOG(LogAssimp, Log, TEXT("Imported scene %d/%d : %s"), i + 1, InFileNames.Num(), *InFileNames[i])
 		}
 
+		Assimp::DefaultLogger::kill();
+
 		RemoveFromRoot();
-		AsyncTask(ENamedThreads::GameThread,
-		          [this]()
-		          {
-			          OnComplete.ExecuteIfBound(EAssimpImportResult::Success, this);
-		          });
+		AsyncTask(ENamedThreads::GameThread, [this]()
+		{
+			OnComplete.ExecuteIfBound(
+				bImportCancelled ? EAssimpImportResult::Cancelled : EAssimpImportResult::Complete,
+				this);
+		});
 	});
 }
 

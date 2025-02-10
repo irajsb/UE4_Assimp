@@ -8,11 +8,13 @@ enum class EAssimpImportResult : uint8
 {
 	Success,
 	Cancelled,
+	Complete,
 	InvalidAIScene
 };
 
 /** Dynamic delegate to track import progress */
-DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAssimpImportProgress, EAssimpImportResult, Result, UAIScene*, AISceneImported, float, ProgressRatio);
+DECLARE_DYNAMIC_DELEGATE_ThreeParams(FOnAssimpImportProgress, EAssimpImportResult, Result, UAIScene*, AISceneImported,
+                                     float, ProgressRatio);
 
 /** Dynamic delegate broadcast after the import is complete */
 DECLARE_DYNAMIC_DELEGATE_TwoParams(FOnAssimpImportComplete, EAssimpImportResult, Result, UAssimpImporter*, Importer);
@@ -26,6 +28,8 @@ UCLASS(BlueprintType, Category = "Asset Import Library")
 class UE_ASSIMP_API UAssimpImporter : public UObject
 {
 	GENERATED_BODY()
+
+	virtual ~UAssimpImporter() override;
 
 protected:
 	FOnAssimpImportProgress OnProgress;
@@ -45,7 +49,17 @@ public:
 		const FOnAssimpImportProgress& OnProgress,
 		const FOnAssimpImportComplete& OnComplete);
 
+	/**
+	 * Canceling the current download
+	 *
+	 * @return Whether the cancellation was successful or not
+	 */
+	UFUNCTION(BlueprintCallable, Category = "Asset Import Library")
+	bool CancelImport();
+
 protected:
 	void AssimpImportFiles(const TArray<FString>& InFileNames);
 	UAIScene* AssimpImportFile(const FString& InFileName);
+
+	bool bImportCancelled = false;
 };
