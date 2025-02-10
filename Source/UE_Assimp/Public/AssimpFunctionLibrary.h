@@ -118,7 +118,7 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
 	 * Does nothing if a mesh does not have normals. You might want this post
 	 * processing step to be executed if you plan to use tangent space calculations
 	 * such as normal mapping  applied to the meshes. There's an importer property,
-	 * <tt>#AI_CONFIG_PP_CT_MAX_SMOOTHING_ANGLE</tt>, which allows you to specify
+	 * <tt>#AI_CONFIG_PP_CT_MAX_SMOOTHIN G_ANGLE</tt>, which allows you to specify
 	 * a maximum smoothing angle for the algorithm. However, usually you'll
 	 * want to leave it at the default value.
 	 */

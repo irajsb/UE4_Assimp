@@ -13,10 +13,10 @@
 #include "Kismet/KismetRenderingLibrary.h"
 
 
-UAIScene* UAIScene::InternalConstructNewScene(UObject* WorldContextObject, const aiScene* Scene, const bool DisableAutoSpaceChange)
+UAIScene* UAIScene::InternalConstructNewScene(const aiScene* Scene, const bool DisableAutoSpaceChange)
 {
 	//todo check if object is already created and skip creation and return object 
-	UAIScene* SceneObject = NewObject<UAIScene>(WorldContextObject, UAIScene::StaticClass(), NAME_None, RF_Transient);
+	UAIScene* SceneObject = NewObject<UAIScene>();
 	SceneObject->scene = const_cast<aiScene*>(Scene);
 	//Setup Meshes
 	SceneObject->OwnedMeshes.Reset();

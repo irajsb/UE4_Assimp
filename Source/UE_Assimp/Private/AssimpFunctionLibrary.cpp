@@ -312,7 +312,7 @@ UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* WorldCo
 	}
 	else
 	{
-		UAIScene* Object = UAIScene::InternalConstructNewScene(WorldContextObject, scene, DisableAutoSpaceChange);
+		UAIScene* Object = UAIScene::InternalConstructNewScene(scene, DisableAutoSpaceChange);
 		Object->FullFilePath=FileName;
 		return Object;
 	}
@@ -355,7 +355,7 @@ void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObje
 		   AsyncTask(ENamedThreads::GameThread,[&]()
 		   {
 							
-			   UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene,DisableAutoSpaceChange);
+			   UAIScene* Object=	UAIScene::InternalConstructNewScene(scene,DisableAutoSpaceChange);
 								
 			   NumOfThreads=NumOfThreads-1;
 			   AIScenes.Add(Object);
