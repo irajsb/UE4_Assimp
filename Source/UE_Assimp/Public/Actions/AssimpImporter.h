@@ -1,8 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AssimpProgressHandler.hpp"
+#include "UE_Assimp.h"
+#include "assimp/ProgressHandler.hpp"
 #include "AssimpImporter.generated.h"
+
+class FAssimpProgressHandler;
 
 UENUM(BlueprintType)
 enum class EAssimpImportResult : uint8
@@ -68,7 +71,40 @@ public:
 protected:
 	void AssimpImportFiles(const TArray<FString>& InFileNames);
 	UAIScene* AssimpImportFile(const FString& InFileName);
-	
+
 	// Progress handler, use to terminate the import process
 	FAssimpProgressHandler* ProgressHandler;
+};
+
+class FAssimpProgressHandler : public Assimp::ProgressHandler
+{
+public:
+	FAssimpProgressHandler() : bTerminationRequested(false)
+	{
+	}
+
+	virtual bool Update(float Percentage) override
+	{
+		UE_LOG(LogAssimp, Log, TEXT("Percentage: %f, bTerminationRequested = %s"), Percentage * 100.0f,
+		       bTerminationRequested ? TEXT("true") : TEXT("false"))
+		if (bTerminationRequested)
+		{
+			return false; // Return false to cancel the import process
+		}
+		// Perform any other progress handling tasks here
+		return true; // Continue the import process
+	}
+
+	void RequestTermination()
+	{
+		bTerminationRequested.store(true);
+	}
+
+	bool IsTerminationRequested() const
+	{
+		return bTerminationRequested.load();
+	}
+
+private:
+	std::atomic<bool> bTerminationRequested;
 };

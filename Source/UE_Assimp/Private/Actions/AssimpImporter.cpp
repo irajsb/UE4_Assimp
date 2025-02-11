@@ -1,7 +1,6 @@
 #include "Actions/AssimpImporter.h"
 
 #include "AIScene.h"
-#include "UE_Assimp.h"
 #include "assimp/ai_assert.h"
 #include "assimp/cimport.h"
 #include "assimp/DefaultLogger.hpp"
@@ -28,14 +27,14 @@ UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
 	AssimpImporter->Flags = Flags;
 	AssimpImporter->DisableAutoSpaceChange = DisableAutoSpaceChange;
 	AssimpImporter->WorldPtr = WorldContextObject;
-	AssimpImporter->ProgressHandler = new FAssimpProgressHandler(); // create a progress handler for all import files
+	// AssimpImporter->ProgressHandler = new FAssimpProgressHandler();
 	AssimpImporter->AssimpImportFiles(InFileNames);
 	return AssimpImporter;
 }
 
 void UAssimpImporter::CancelImport()
 {
-	if (!ProgressHandler->IsTerminationRequested())
+	if (ProgressHandler && !ProgressHandler->IsTerminationRequested())
 	{
 		ProgressHandler->RequestTermination();
 		UE_LOG(LogAssimp, Log, TEXT("Cancelled import %s"), *GetNameSafe(this));
@@ -50,7 +49,7 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 
 		for (int i = 0; i < InFileNames.Num(); i++)
 		{
-			if (ProgressHandler->IsTerminationRequested())
+			if (ProgressHandler && ProgressHandler->IsTerminationRequested())
 			{
 				break;
 			}
@@ -59,7 +58,7 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 			EAssimpImportResult Result = IsValid(AIScene)
 				                             ? EAssimpImportResult::Success
 				                             : EAssimpImportResult::InvalidAIScene;
-			if (ProgressHandler->IsTerminationRequested())
+			if (ProgressHandler && ProgressHandler->IsTerminationRequested())
 			{
 				break;
 			}
@@ -111,6 +110,7 @@ UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 		// create an Importer for this file
 		Assimp::Importer* Importer = new Assimp::Importer();
 		// set up a progress handler, use to terminate the import process
+		ProgressHandler = new FAssimpProgressHandler();
 		Importer->SetProgressHandler(ProgressHandler);
 
 		// skip copy properties
