@@ -2,9 +2,13 @@
 
 #include "AIScene.h"
 #include "UE_Assimp.h"
+#include "assimp/ai_assert.h"
 #include "assimp/cimport.h"
 #include "assimp/DefaultLogger.hpp"
+#include "assimp/Exceptional.h"
+#include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
+#include "UE_AssimpLibrary/assimp/code/Common/ScenePrivate.h"
 
 UAssimpImporter::~UAssimpImporter()
 {
@@ -24,15 +28,18 @@ UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
 	AssimpImporter->Flags = Flags;
 	AssimpImporter->DisableAutoSpaceChange = DisableAutoSpaceChange;
 	AssimpImporter->WorldPtr = WorldContextObject;
+	AssimpImporter->ProgressHandler = new FAssimpProgressHandler(); // create a progress handler for all import files
 	AssimpImporter->AssimpImportFiles(InFileNames);
 	return AssimpImporter;
 }
 
-bool UAssimpImporter::CancelImport()
+void UAssimpImporter::CancelImport()
 {
-	bImportCancelled = true;
-	UE_LOG(LogAssimp, Log, TEXT("Cancelled import %s"), *GetNameSafe(this));
-	return true;
+	if (!ProgressHandler->IsTerminationRequested())
+	{
+		ProgressHandler->RequestTermination();
+		UE_LOG(LogAssimp, Log, TEXT("Cancelled import %s"), *GetNameSafe(this));
+	}
 }
 
 void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
@@ -43,7 +50,7 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 
 		for (int i = 0; i < InFileNames.Num(); i++)
 		{
-			if (bImportCancelled)
+			if (ProgressHandler->IsTerminationRequested())
 			{
 				break;
 			}
@@ -52,7 +59,7 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 			EAssimpImportResult Result = IsValid(AIScene)
 				                             ? EAssimpImportResult::Success
 				                             : EAssimpImportResult::InvalidAIScene;
-			if (bImportCancelled)
+			if (ProgressHandler->IsTerminationRequested())
 			{
 				break;
 			}
@@ -69,7 +76,9 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 		AsyncTask(ENamedThreads::GameThread, [this]()
 		{
 			OnComplete.ExecuteIfBound(
-				bImportCancelled ? EAssimpImportResult::Cancelled : EAssimpImportResult::Complete,
+				ProgressHandler->IsTerminationRequested()
+					? EAssimpImportResult::Cancelled
+					: EAssimpImportResult::Complete,
 				this);
 		});
 	});
@@ -77,18 +86,58 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 
 UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 {
+	UAIScene* Object = nullptr;
+
 	if (!DisableAutoSpaceChange)
 	{
 		Flags |= aiProcess_MakeLeftHanded | aiProcessPreset_TargetRealtime_Quality;
 	}
 
-	if (const aiScene* Scene = aiImportFile(TCHAR_TO_UTF8(*InFileName), static_cast<unsigned int>(Flags)))
+	// The old implementation logic, but the import process cannot be terminated, so the read file logic is overridden based on this
+	/*if (const aiScene* Scene = aiImportFile(TCHAR_TO_UTF8(*InFileName), static_cast<unsigned int>(Flags)))
 	{
-		UAIScene* Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
+		Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
 		Object->FullFilePath = InFileName;
-		return Object;
-	}
+	}*/
 
-	UE_LOG(LogAssimp, Error, TEXT("Failed to import file %s"), *InFileName)
-	return nullptr;
+	/**
+	 * @brief The new implementation logic, but the import process can be terminated
+	 * @link aiImportFileExWithProperties
+	 */
+	const char* FilePtr = TCHAR_TO_UTF8(*InFileName);
+	ai_assert(nullptr != FilePtr);
+
+	ASSIMP_BEGIN_EXCEPTION_REGION()
+		// create an Importer for this file
+		Assimp::Importer* Importer = new Assimp::Importer();
+		// set up a progress handler, use to terminate the import process
+		Importer->SetProgressHandler(ProgressHandler);
+
+		// skip copy properties
+		// skip set up a custom IO system if necessary
+
+		// and have it read the file
+		// if succeeded, store the importer in the scene and keep it alive
+		if (const aiScene* Scene = Importer->ReadFile(FilePtr, static_cast<unsigned int>(Flags)))
+		{
+			Assimp::ScenePrivateData* ScenePrivateData =
+				const_cast<Assimp::ScenePrivateData*>(Assimp::ScenePriv(Scene));
+			ScenePrivateData->mOrigImporter = Importer;
+
+			// create a AIScene for unreal
+			Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
+			Object->FullFilePath = InFileName; // set full file path
+		}
+		else
+		{
+			// if failed, extract error code and destroy the import
+			UE_LOG(LogAssimp, Error, TEXT("Failed to import file %s, ErrorString: %hs"),
+			       *InFileName, Importer->GetErrorString())
+			delete Importer;
+		}
+
+		// return imported data. If the import failed the pointer is nullptr anyway
+	ASSIMP_END_EXCEPTION_REGION(UAIScene *);
+
+	return Object;
 }
