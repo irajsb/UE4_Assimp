@@ -9,14 +9,20 @@
 #include "assimp/postprocess.h"
 #include "UE_AssimpLibrary/assimp/code/Common/ScenePrivate.h"
 
+UAssimpImporter::UAssimpImporter(): Flags(0), DisableAutoSpaceChange(false), WorldPtr(nullptr),
+                                    ProgressHandler(nullptr)
+{
+}
+
 UAssimpImporter::~UAssimpImporter()
 {
+	UE_LOG(LogAssimp, Log, TEXT("Destroyed AssimpImporter %s"), *GetNameSafe(this))
 	CancelImport();
 }
 
 UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
                                                     const TArray<FString>& InFileNames, const int Flags,
-                                                    bool DisableAutoSpaceChange,
+                                                    const bool bDisableAutoSpaceChange,
                                                     const FOnAssimpImportProgress& OnProgress,
                                                     const FOnAssimpImportComplete& OnComplete)
 {
@@ -25,7 +31,7 @@ UAssimpImporter* UAssimpImporter::AssimpImportFiles(UObject* WorldContextObject,
 	AssimpImporter->OnProgress = OnProgress;
 	AssimpImporter->OnComplete = OnComplete;
 	AssimpImporter->Flags = Flags;
-	AssimpImporter->DisableAutoSpaceChange = DisableAutoSpaceChange;
+	AssimpImporter->DisableAutoSpaceChange = bDisableAutoSpaceChange;
 	AssimpImporter->WorldPtr = WorldContextObject;
 	// AssimpImporter->ProgressHandler = new FAssimpProgressHandler();
 	AssimpImporter->AssimpImportFiles(InFileNames);
@@ -36,6 +42,7 @@ void UAssimpImporter::CancelImport()
 {
 	if (ProgressHandler && !ProgressHandler->IsTerminationRequested())
 	{
+		// @todo: It won't end right away
 		ProgressHandler->RequestTermination();
 		UE_LOG(LogAssimp, Log, TEXT("Cancelled import %s"), *GetNameSafe(this));
 	}
@@ -80,6 +87,8 @@ void UAssimpImporter::AssimpImportFiles(const TArray<FString>& InFileNames)
 					: EAssimpImportResult::Complete,
 				this);
 		});
+
+		ConditionalBeginDestroy();
 	});
 }
 
@@ -101,7 +110,7 @@ UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 
 	/**
 	 * @brief The new implementation logic, but the import process can be terminated
-	 * @link aiImportFileExWithProperties
+	 * @link aiScene::aiImportFileExWithProperties
 	 */
 	const char* FilePtr = TCHAR_TO_UTF8(*InFileName);
 	ai_assert(nullptr != FilePtr);

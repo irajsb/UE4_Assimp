@@ -33,6 +33,7 @@ class UE_ASSIMP_API UAssimpImporter : public UObject
 {
 	GENERATED_BODY()
 
+	UAssimpImporter();
 	virtual ~UAssimpImporter() override;
 
 protected:
@@ -51,25 +52,29 @@ public:
 	 * @param WorldContextObject
 	 * @param InFileNames The files to import
 	 * @param Flags The flags to use. You can use post process nodes and use | (bitwise Or node) between them to create any combination of flags. Also We recommend using preset flags. Flip UV flag is needed for correct unreal engine meshes
-	 * @param DisableAutoSpaceChange
+	 * @param bDisableAutoSpaceChange
 	 * @param OnProgress
 	 * @param OnComplete
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Asset Import Library", meta=( WorldContext="WorldContextObject"))
 	static UPARAM(DisplayName = "Assimp Importer")UAssimpImporter* AssimpImportFiles(UObject* WorldContextObject,
 		const TArray<FString>& InFileNames, const int Flags,
-		bool DisableAutoSpaceChange,
+		const bool bDisableAutoSpaceChange,
 		const FOnAssimpImportProgress& OnProgress,
 		const FOnAssimpImportComplete& OnComplete);
 
 	/**
 	 * Canceling the current import
+	 * It won't end right away
+	 * @link Assimp::ProgressHandler::Update
 	 */
 	UFUNCTION(BlueprintCallable, Category = "Asset Import Library")
 	void CancelImport();
 
 protected:
+	// Importing the files
 	void AssimpImportFiles(const TArray<FString>& InFileNames);
+	// Importing the file
 	UAIScene* AssimpImportFile(const FString& InFileName);
 
 	// Progress handler, use to terminate the import process
@@ -82,7 +87,23 @@ public:
 	FAssimpProgressHandler() : bTerminationRequested(false)
 	{
 	}
-
+	
+	/** @brief Progress callback.
+	 *  @param Percentage An estimate of the current loading progress,
+	 *    in percent. Or -1.f if such an estimate is not available.
+	 *
+	 *  There are restriction on what you may do from within your
+	 *  implementation of this method: no exceptions may be thrown and no
+	 *  non-const #Importer methods may be called. It is
+	 *  not generally possible to predict the number of callbacks
+	 *  fired during a single import.
+	 *
+	 *  @return Return false to abort loading at the next possible
+	 *   occasion (loaders and Assimp are generally allowed to perform
+	 *   all needed cleanup tasks prior to returning control to the
+	 *   caller). If the loading is aborted, #Importer::ReadFile()
+	 *   returns always nullptr.
+	 *   */
 	virtual bool Update(float Percentage) override
 	{
 		UE_LOG(LogAssimp, Log, TEXT("Percentage: %f, bTerminationRequested = %s"), Percentage * 100.0f,
