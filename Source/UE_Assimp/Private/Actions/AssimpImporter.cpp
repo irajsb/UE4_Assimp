@@ -112,7 +112,9 @@ UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 	 * @brief The new implementation logic, but the import process can be terminated
 	 * @link aiScene::aiImportFileExWithProperties
 	 */
-	const char* FilePtr = TCHAR_TO_UTF8(*InFileName);
+	// const char* FilePtr = TCHAR_TO_UTF8(*InFileName); // Sometimes the returned results are garbled
+	const FTCHARToUTF8 Converter(*InFileName);
+	const char* FilePtr = Converter.Get();
 	ai_assert(nullptr != FilePtr);
 
 	ASSIMP_BEGIN_EXCEPTION_REGION()
