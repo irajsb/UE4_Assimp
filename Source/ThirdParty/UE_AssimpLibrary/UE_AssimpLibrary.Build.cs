@@ -26,6 +26,7 @@ public class UE_AssimpLibrary : ModuleRules
 
 		string BinaryFolder = BinFolder(Target);
 		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "assimp", "include"));
+		PublicIncludePaths.Add(Path.Combine(ModuleDirectory, "assimp", "code"));
 		if (Target.Platform == UnrealTargetPlatform.Win64)
 		{
 			// Add the import library

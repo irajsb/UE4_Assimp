@@ -4,10 +4,10 @@
 #include "assimp/ai_assert.h"
 #include "assimp/cimport.h"
 #include "assimp/DefaultLogger.hpp"
-#include "assimp/Exceptional.h"
+// #include "assimp/Exceptional.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
-#include "UE_AssimpLibrary/assimp/code/Common/ScenePrivate.h"
+#include "Common/ScenePrivate.h"
 
 UAssimpImporter::UAssimpImporter(): Flags(0), DisableAutoSpaceChange(false), WorldPtr(nullptr),
                                     ProgressHandler(nullptr)
@@ -117,38 +117,39 @@ UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 	const char* FilePtr = Converter.Get();
 	ai_assert(nullptr != FilePtr);
 
-	ASSIMP_BEGIN_EXCEPTION_REGION()
-		// create an Importer for this file
-		Assimp::Importer* Importer = new Assimp::Importer();
-		// set up a progress handler, use to terminate the import process
-		ProgressHandler = new FAssimpProgressHandler();
-		Importer->SetProgressHandler(ProgressHandler);
+	// ASSIMP_BEGIN_EXCEPTION_REGION()
 
-		// skip copy properties
-		// skip set up a custom IO system if necessary
+	// create an Importer for this file
+	Assimp::Importer* Importer = new Assimp::Importer();
+	// set up a progress handler, use to terminate the import process
+	ProgressHandler = new FAssimpProgressHandler();
+	Importer->SetProgressHandler(ProgressHandler);
 
-		// and have it read the file
-		// if succeeded, store the importer in the scene and keep it alive
-		if (const aiScene* Scene = Importer->ReadFile(FilePtr, static_cast<unsigned int>(Flags)))
-		{
-			Assimp::ScenePrivateData* ScenePrivateData =
-				const_cast<Assimp::ScenePrivateData*>(Assimp::ScenePriv(Scene));
-			ScenePrivateData->mOrigImporter = Importer;
+	// skip copy properties
+	// skip set up a custom IO system if necessary
 
-			// create a AIScene for unreal
-			Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
-			Object->FullFilePath = InFileName; // set full file path
-		}
-		else
-		{
-			// if failed, extract error code and destroy the import
-			UE_LOG(LogAssimp, Error, TEXT("Failed to import file %s, ErrorString: %hs"),
-			       *InFileName, Importer->GetErrorString())
-			delete Importer;
-		}
+	// and have it read the file
+	// if succeeded, store the importer in the scene and keep it alive
+	if (const aiScene* Scene = Importer->ReadFile(FilePtr, static_cast<unsigned int>(Flags)))
+	{
+		Assimp::ScenePrivateData* ScenePrivateData =
+			const_cast<Assimp::ScenePrivateData*>(Assimp::ScenePriv(Scene));
+		ScenePrivateData->mOrigImporter = Importer;
 
-		// return imported data. If the import failed the pointer is nullptr anyway
-	ASSIMP_END_EXCEPTION_REGION(UAIScene *);
+		// create a AIScene for unreal
+		Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
+		Object->FullFilePath = InFileName; // set full file path
+	}
+	else
+	{
+		// if failed, extract error code and destroy the import
+		UE_LOG(LogAssimp, Error, TEXT("Failed to import file %s, ErrorString: %hs"),
+		       *InFileName, Importer->GetErrorString())
+		delete Importer;
+	}
+
+	// return imported data. If the import failed the pointer is nullptr anyway
+	// ASSIMP_END_EXCEPTION_REGION(UAIScene *);
 
 	return Object;
 }
