@@ -280,14 +280,14 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 }
 
 
-void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* ParentObject,
+void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* WorldContextObject,
                                           TArray<UAIScene*>& Scenes, int Flags, bool DisableAutoSpaceChange)
 {
 	Assimp::DefaultLogger::set(new UEAssimpStream());
 
 	for (FString FileName : InFilenames)
 	{
-		UAIScene* Object = UAssimpFunctionLibrary::ImportScene(FileName, ParentObject, Flags, DisableAutoSpaceChange);
+		UAIScene* Object = UAssimpFunctionLibrary::ImportScene(FileName, WorldContextObject, Flags, DisableAutoSpaceChange);
 		if (Object != nullptr)
                 {
 			Scenes.Add(Object);
@@ -295,7 +295,7 @@ void UAssimpFunctionLibrary::ImportScenes(TArray<FString> InFilenames, UObject* 
 	}
 }
 
-UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentObject, int Flags, bool DisableAutoSpaceChange)
+UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* WorldContextObject, int Flags, bool DisableAutoSpaceChange)
 {
 	Assimp::DefaultLogger::set(new UEAssimpStream());
 
@@ -312,7 +312,7 @@ UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* ParentO
 	}
 	else
 	{
-		UAIScene* Object = UAIScene::InternalConstructNewScene(ParentObject, scene, DisableAutoSpaceChange);
+		UAIScene* Object = UAIScene::InternalConstructNewScene(scene, DisableAutoSpaceChange);
 		Object->FullFilePath=FileName;
 		return Object;
 	}
@@ -355,7 +355,7 @@ void UAssimpFunctionLibrary::ImportScenesAsync(TArray<FString> InFilenames,UObje
 		   AsyncTask(ENamedThreads::GameThread,[&]()
 		   {
 							
-			   UAIScene* Object=	UAIScene::InternalConstructNewScene(ParentObject,scene,DisableAutoSpaceChange);
+			   UAIScene* Object=	UAIScene::InternalConstructNewScene(scene,DisableAutoSpaceChange);
 								
 			   NumOfThreads=NumOfThreads-1;
 			   AIScenes.Add(Object);
