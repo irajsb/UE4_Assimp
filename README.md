@@ -1,6 +1,6 @@
 ![](https://img.shields.io/badge/Status-Under%20Development-red) ![](https://img.shields.io/badge/Contribution-Help%20Needed-blue)
 # Assimp Mesh Importer  5.4.2 for  Unreal engine 
-Features:
+### Features:
 - Static Mesh and Procedural Mesh support  
 - Mesh instancing for Static Meshes
 - Async Loading
@@ -15,6 +15,11 @@ Features:
 :-------------------------:|:-------------------------:
 ![](.github/Image1m.png)  |  ![](.github/Image2m.png)
 ---
+
+### Experimental features:
+- Dynamic Mesh support from UE 5.0 onwards, which are faster than Static Mesh and Procedural Mesh
+- Use AssimpImporter for asynchronous imports
+
 ## Docs  :  
 For instructions about how to use visit : [Docs](https://github.com/irajsb/UE4_Assimp/wiki)
 
