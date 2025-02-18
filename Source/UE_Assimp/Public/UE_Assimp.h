@@ -3,10 +3,10 @@
 #pragma once
 
 #include "assimp/Logger.hpp"
-#include "assimp/LogStream.hpp"
 #include "Modules/ModuleManager.h"
-#define ToVector(In) FVector(In.x, In.y, In.z)
-#define ToVectorCM(In) FVector(In.x*100, In.y*100, In.z*100) //convert Meters to cm (DEPRECATED)
+// rename ToVector to aiVector3DToVector, because the engine plugin "LidarPointCloud" already has a ToVector
+#define aiVector3DToVector(In) FVector(In.x, In.y, In.z)
+#define aiVector3DToVectorCM(In) FVector(In.x*100, In.y*100, In.z*100) //convert Meters to cm (DEPRECATED)
 DECLARE_LOG_CATEGORY_EXTERN(LogAssimp, Log, All);
 
 
