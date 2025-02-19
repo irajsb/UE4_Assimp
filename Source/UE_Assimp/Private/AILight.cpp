@@ -20,17 +20,17 @@ TEnumAsByte<EAssimpLightType> UAILight::GetLightType()
 
 FVector UAILight::GetLightPosition()
 {
-	return ToVector(Light->mPosition);
+	return aiVector3DToVector(Light->mPosition);
 }
 
 FVector UAILight::GetLightDirection()
 {
-	return  ToVector(Light->mDirection);
+	return  aiVector3DToVector(Light->mDirection);
 }
 
 FVector UAILight::GetUpDirection()
 {
-	return  ToVector(Light->mUp);
+	return  aiVector3DToVector(Light->mUp);
 }
 
 float UAILight::GetAttenuationConstant()

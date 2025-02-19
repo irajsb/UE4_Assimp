@@ -34,15 +34,15 @@ float UAICamera::GetAspectRatio()
 
 FVector UAICamera::GetPosition()
 {
-	return ToVector( camera->mPosition);
+	return aiVector3DToVector( camera->mPosition);
 }
 
 FVector UAICamera::GetUpVector()
 {
-	return ToVector( camera->mUp);
+	return aiVector3DToVector( camera->mUp);
 }
 
 FVector UAICamera::GetLookAtVector()
 {
-	return ToVector( camera->mLookAt);
+	return aiVector3DToVector( camera->mLookAt);
 }

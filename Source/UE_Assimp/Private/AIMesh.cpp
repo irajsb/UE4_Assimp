@@ -32,7 +32,7 @@ void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 	Vertices.AddUninitialized(Mesh->mNumVertices);
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
-		Vertices[Index] = ToVector(Mesh->mVertices[Index]);
+		Vertices[Index] = aiVector3DToVector(Mesh->mVertices[Index]);
 	}
 }
 
@@ -52,7 +52,7 @@ void UAIMesh::GetMeshNormals(TArray<FVector>& Normals)
 	Normals.AddUninitialized(Mesh->mNumVertices);
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
-		Normals[Index] = ToVector(Mesh->mNormals[Index]);
+		Normals[Index] = aiVector3DToVector(Mesh->mNormals[Index]);
 	}
 }
 
@@ -93,12 +93,12 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
 
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
-		Normals[Index] = ToVector(Mesh->mNormals[Index]);
-		Vertices[Index] = ToVector(Mesh->mVertices[Index]);
+		Normals[Index] = aiVector3DToVector(Mesh->mNormals[Index]);
+		Vertices[Index] = aiVector3DToVector(Mesh->mVertices[Index]);
 
 		if (Mesh->mTangents)
 		{
-			Tangents[Index].TangentX = ToVector(Mesh->mTangents[Index]);
+			Tangents[Index].TangentX = aiVector3DToVector(Mesh->mTangents[Index]);
 		}
 
 		if (Mesh->HasTextureCoords(0))
@@ -136,14 +136,14 @@ UStaticMesh* UAIMesh::GetStaticMesh()
 	VertexInstances.AddUninitialized(Mesh->mNumVertices);
 	for (unsigned int Index = 0; Index < Mesh->mNumVertices; Index++)
 	{
-		auto VertexID = MeshDescBuilder.AppendVertex(ToVector(Mesh->mVertices[Index]));
+		auto VertexID = MeshDescBuilder.AppendVertex(aiVector3DToVector(Mesh->mVertices[Index]));
 
 		auto Instance = MeshDescBuilder.AppendInstance(VertexID);
 		VertexInstances[Index] = Instance;
 		
 		if(Mesh->HasNormals())
 		{
-		MeshDescBuilder.SetInstanceNormal(Instance,ToVector(Mesh->mNormals[Index]));
+		MeshDescBuilder.SetInstanceNormal(Instance,aiVector3DToVector(Mesh->mNormals[Index]));
 		}else
 		{
 			UE_LOG(LogAssimp,Warning,TEXT("Normals not found consider generating them with assimp"))
