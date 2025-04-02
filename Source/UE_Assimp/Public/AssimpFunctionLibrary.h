@@ -47,10 +47,10 @@ FileTypes					The type filters to show in the dialog. This string should be a "|
 	                             uint32 Flags, TArray<FString>& OutFilenames, int32& OutFilterIndex);
 
 	//Flags: You can use post process nodes and use | (bitwise Or node) between them to create any combination of flags. Also We recommend using preset flags. Flip UV flag is needed for correct urneal engine meshes
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly = "true", WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, meta=( WorldContext="WorldContextObject"))
 	static void ImportScenes(TArray<FString> InFilenames, UObject* WorldContextObject, TArray<UAIScene*>& Scenes, int Flags, bool DisableAutoSpaceChange);
 
-	UFUNCTION(BlueprintCallable, meta=(BlueprintInternalUseOnly = "true", WorldContext="WorldContextObject"))
+	UFUNCTION(BlueprintCallable, meta=( WorldContext="WorldContextObject"))
 	static UAIScene* ImportScene(FString FileName, UObject* WorldContextObject, int Flags, bool DisableAutoSpaceChange);
 	//Experimental
 	UFUNCTION(BlueprintCallable)
