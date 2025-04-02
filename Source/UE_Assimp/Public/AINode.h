@@ -68,6 +68,16 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	UAIScene* GetScene();
 
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	bool GetMetaDataBool(FString Key,  bool& Success) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	int GetMetaDataInt(FString Key, bool& Success) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	FString GetMetaDataString(FString Key, bool& Success) const;
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
+	float GetMetaDataFloat(FString Key, bool& Success) const;
+
 private:
 	void RegisterNewNode(aiNode* InNode, UAIScene* Scene, const aiMatrix4x4& ParentTransform);
 

@@ -91,3 +91,68 @@ UAIScene* UAINode::GetScene()
 	return nullptr;
 }
 
+bool UAINode::GetMetaDataBool(FString Key,  bool& Success) const
+{
+	Success=false;
+	if (Node)
+	{
+		if (Node->mMetaData)
+		{
+			bool Value = false;
+			Success=Node->mMetaData->Get(TCHAR_TO_UTF8(*Key), Value);
+			return Value;
+		}
+	}
+
+	return false;
+}
+
+
+
+int UAINode::GetMetaDataInt(FString Key, bool& Success) const
+{
+	Success = false;
+	if (Node)
+	{
+		if (Node->mMetaData)
+		{
+			int Value = 0;
+			Success = Node->mMetaData->Get(TCHAR_TO_UTF8(*Key), Value);
+			return Value;
+		}
+	}
+
+	return 0;
+}
+
+FString UAINode::GetMetaDataString(FString Key, bool& Success) const
+{
+	Success = false;
+	if (Node)
+	{
+		if (Node->mMetaData)
+		{
+			aiString Value;
+			Success = Node->mMetaData->Get(TCHAR_TO_UTF8(*Key), Value);
+			return UTF8_TO_TCHAR(Value.C_Str());
+		}
+	}
+
+	return "";
+}
+
+float UAINode::GetMetaDataFloat(FString Key, bool& Success) const
+{
+	Success = false;
+	if (Node)
+	{
+		if (Node->mMetaData)
+		{
+			float Value = 0.0f;
+			Success = Node->mMetaData->Get(TCHAR_TO_UTF8(*Key), Value);
+			return Value;
+		}
+	}
+
+	return 0.0f;
+}
