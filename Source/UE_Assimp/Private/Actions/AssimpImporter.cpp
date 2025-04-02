@@ -7,7 +7,7 @@
 // #include "assimp/Exceptional.h"
 #include "assimp/Importer.hpp"
 #include "assimp/postprocess.h"
-#include "Common/ScenePrivate.h"
+/*#include "Common/ScenePrivate.h"*/
 
 UAssimpImporter::UAssimpImporter(): Flags(0), DisableAutoSpaceChange(false), WorldPtr(nullptr),
                                     ProgressHandler(nullptr)
@@ -132,10 +132,11 @@ UAIScene* UAssimpImporter::AssimpImportFile(const FString& InFileName)
 	// if succeeded, store the importer in the scene and keep it alive
 	if (const aiScene* Scene = Importer->ReadFile(FilePtr, static_cast<unsigned int>(Flags)))
 	{
-		Assimp::ScenePrivateData* ScenePrivateData =
+		// TODO : Depending on plugin private code is not a good idea . Libraries ususally come with an include and binary folder if not built with source code 
+		/*Assimp::ScenePrivateData* ScenePrivateData =
 			const_cast<Assimp::ScenePrivateData*>(Assimp::ScenePriv(Scene));
-		ScenePrivateData->mOrigImporter = Importer;
-
+		ScenePrivateData->mOrigImporter = Importer;*/
+		
 		// create a AIScene for unreal
 		Object = UAIScene::InternalConstructNewScene(Scene, DisableAutoSpaceChange);
 		Object->FullFilePath = InFileName; // set full file path
