@@ -69,6 +69,9 @@ public:
 	UAIScene* GetScene();
 
 
+	UFUNCTION(BlueprintCallable, Category="Assimp|Node")
+	TMap<FString,FString> GetMetaDataList();
+
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")
 	bool GetMetaDataBool(FString Key,  bool& Success) const;
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Assimp|Node")

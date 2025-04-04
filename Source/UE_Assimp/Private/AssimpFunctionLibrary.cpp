@@ -277,6 +277,8 @@ bool UAssimpFunctionLibrary::FileDialogShared(bool bSave, const void* ParentWind
 
 #endif
 #pragma endregion
+
+	return false;
 }
 
 
@@ -303,6 +305,7 @@ UAIScene* UAssimpFunctionLibrary::ImportScene(FString FileName, UObject* WorldCo
            Flags |= aiProcess_MakeLeftHanded | aiProcessPreset_TargetRealtime_Quality;
         }
 
+	
 	const struct aiScene* scene = aiImportFile(TCHAR_TO_UTF8(*FileName), (unsigned int)Flags);
 
 	if (!scene)

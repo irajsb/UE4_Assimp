@@ -67,7 +67,9 @@ public class UE_AssimpLibrary : ModuleRules
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Android)
 		{
-			PublicAdditionalLibraries.Add(Path.Combine(BinaryFolder, "arm64-v8a", "libassimp.so"));
+			PublicAdditionalLibraries.Add(Path.Combine(ModuleDirectory, "assimp", "bin", "Release", "libassimp.so"));
+			
+			
 		}
 		else if (Target.Platform == UnrealTargetPlatform.Linux)
 		{

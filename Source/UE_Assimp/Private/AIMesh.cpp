@@ -18,7 +18,7 @@
 
 void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 {
-	if (!this)
+	if (!IsValidLowLevelFast())
 	{
 		UE_LOG(LogAssimp, Fatal, TEXT("No Mesh"));
 		return;
@@ -38,7 +38,7 @@ void UAIMesh::GetMeshVertices(TArray<FVector>& Vertices)
 
 void UAIMesh::GetMeshNormals(TArray<FVector>& Normals)
 {
-	if (!this)
+	if (!IsValidLowLevelFast())
 	{
 		UE_LOG(LogAssimp, Fatal, TEXT("No Mesh"));
 		return;
@@ -60,7 +60,7 @@ void UAIMesh::GetMeshDataForProceduralMesh(TArray<FVector>& Vertices, TArray<int
                                            TArray<FVector>& Normals, TArray<FVector2D>& UV0,
                                            TArray<FProcMeshTangent>& Tangents)
 {
-	if (!this)
+	if (!IsValidLowLevelFast())
 	{
 		UE_LOG(LogAssimp, Fatal, TEXT("No Mesh"));
 		return;
